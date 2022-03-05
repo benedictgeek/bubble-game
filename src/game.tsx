@@ -1,5 +1,6 @@
 import React from "react";
 import { GameBoard } from "./components/gameBoard";
+import { GamePad } from "./components/pad/gamePad";
 
 const Game = () => {
   return (
@@ -8,7 +9,7 @@ const Game = () => {
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <GameBoard />
-      <p>Click Pad</p>
+      <GamePad />
     </div>
   );
 };
