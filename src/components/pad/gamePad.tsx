@@ -8,8 +8,12 @@ export const GamePad = () => {
   useEffect(() => {
     document.getElementById("pad")?.addEventListener("mousemove", (event) => {
       console.log(
-        Math.abs(Math.atan2(event.offsetY - 50, 50 - event.offsetX) * 180) /
-          Math.PI
+        Math.abs(
+          Math.atan2(
+            event.offsetY - padHeight / 2,
+            padWidth / 2 - event.offsetX
+          ) * 180
+        ) / Math.PI
       );
     });
   }, []);
