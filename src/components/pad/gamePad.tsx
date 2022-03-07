@@ -7,14 +7,16 @@ export const GamePad = () => {
   const padRef = useRef(null);
   useEffect(() => {
     document.getElementById("pad")?.addEventListener("mousemove", (event) => {
-      console.log(
-        Math.abs(
-          Math.atan2(
-            event.offsetY - padHeight / 2,
-            padWidth / 2 - event.offsetX
-          ) * 180
-        ) / Math.PI
-      );
+      if (event.offsetY <= padHeight / 2) {
+        console.log(
+          Math.abs(
+            Math.atan2(
+              event.offsetY - padHeight / 2,
+              padWidth / 2 - event.offsetX
+            ) * 180
+          ) / Math.PI
+        );
+      }
     });
   }, []);
   return (
