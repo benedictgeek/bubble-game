@@ -39,24 +39,40 @@ const Ball = ({ width, height }: { width: number; height: number }) => {
   );
   const ballRef = useRef(null);
   useEffect(() => {
-    gsap.to(ballRef.current, { x: width / 2 - 25, y: height - 52 });
+    gsap.to(ballRef.current, { x: width / 2 - 25, y: height - 50 });
   }, [width, height]);
 
   useEffect(() => {
-    console.log("VALUEEE", trajectoryAngle);
-    let radians = (trajectoryAngle * Math.PI) / 180;
+    let radians = trajectoryAngle * (Math.PI / 180);
+    let xWidth = width / 2 - 25;
+    let xHeight = 0;
+    let from = { x: width / 2 - 25, y: height - 52 };
+    let to = { x: 0, y: 0 };
     if (isShooting == true) {
-      let distance =
-        (width / 2 - 25) * Math.tan((trajectoryAngle * Math.PI) / 180);
+      if (trajectoryAngle < 90) {
+        //width is know here
 
-      gsap.fromTo(
-        ballRef.current,
-        { x: width / 2 - 25, y: height - 52 },
-        {
-          x: Math.cos(radians) * height * Math.sin(radians),
-          y: height * Math.sin(radians),
+        //we use tan here to get height (opp / adj)
+        let widthPoint = 0;
+        xHeight = height - 50 - Math.tan(radians) * xWidth;
+        let isHeightReached = Math.max(0, xHeight) == 0;
+        console.log("HEIGHT COMP", xHeight, isHeightReached);
+        if (isHeightReached) {
+          xHeight = 0;
+          widthPoint = xWidth - (height - 50) / Math.tan(radians);
         }
-      );
+        to.x = widthPoint;
+        to.y = xHeight;
+      } else if (trajectoryAngle == 90) {
+        to.x = xWidth;
+        to.y = 0;
+      } else if (trajectoryAngle > 90) {
+        return;
+      }
+
+      console.log("TO:  ", to);
+
+      gsap.fromTo(ballRef.current, from, to);
     }
   }, [isShooting]);
 
