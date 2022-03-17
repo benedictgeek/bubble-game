@@ -2,10 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const gameSlice = createSlice({
   name: "game",
-  initialState: {},
-  reducers: {},
+  initialState: {
+    boardDimension: {},
+  },
+  reducers: {
+    setBoardDimension: (state, action) => {
+      state.boardDimension = action.payload;
+    },
+  },
 });
 
-export const {} = gameSlice.actions;
+export const { setBoardDimension } = gameSlice.actions;
 
 export default gameSlice.reducer;
