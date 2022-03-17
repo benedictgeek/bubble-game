@@ -1,12 +1,12 @@
 import React from "react";
-import { GameBoard } from "./components/gameBoard";
+import { GameBoard } from "./components/gameBoard/gameBoard";
 import { GamePad } from "./components/pad/gamePad";
+import styles from "./index.module.scss";
 
 const Game = () => {
   return (
     <div
-      className="App"
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      className={styles.appContainer}
     >
       <GameBoard />
       <GamePad />

@@ -1,34 +1,15 @@
 import gsap from "gsap";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import styles from "./gameBoard.module.scss";
 
 export const GameBoard = () => {
-  const [height, setHeight] = useState(0);
-  const [width, setWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    let windowHeight = window.innerHeight;
-    let windowWidth = window.innerWidth;
-    if (windowWidth <= 350) {
-      windowWidth = windowWidth * 0.9;
-    } else if (windowWidth <= 620) {
-      windowWidth = windowWidth * 0.8;
-    } else {
-      windowWidth = windowWidth * 0.3;
-    }
-    setHeight(windowHeight * 0.7);
-    setWidth(windowWidth);
-  }, []);
+  let boardRef = useRef(null);
+  const dispatch = useDispatch();
 
   return (
-    <div
-      style={{
-        width: width,
-        height: height,
-        border: "2px solid black",
-      }}
-    >
-      <Ball width={width} height={height} />
+    <div ref={boardRef} className={styles.boardContainer}>
+      {/* <Ball /> */}
     </div>
   );
 };
