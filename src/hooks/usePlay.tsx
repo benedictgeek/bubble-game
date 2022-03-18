@@ -1,13 +1,19 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import gsap from "gsap";
+import { setNewBallTrigger } from "../state/gameSlice";
+import { shoot } from "../state/playerBallSlice";
 
 export const usePlay = () => {
   const { trajectoryAngle, isShooting } = useSelector(
     (state: any) => state.playerBall
   );
 
-  const { currentBallRef } = useSelector((state: any) => state.gameSlice);
+  const { currentBallRef, boardDimension } = useSelector(
+    (state: any) => state.gameSlice
+  );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isShooting) {
@@ -16,8 +22,8 @@ export const usePlay = () => {
 
       let moveBall = (timestamp: number) => {
         gsap.to(currentBallRef.current, {
-          x: "+=" + xOffset,
-          y: "+=" + yOffset,
+          x: "+=" + xOffset * 4,
+          y: "+=" + yOffset * 4,
           duration: 0,
         });
         // currentBallRef.current.offsetLeft =
@@ -26,15 +32,24 @@ export const usePlay = () => {
         //   currentBallRef.current.getBoundingClientRect().y + yOffset;
 
         // let { offsetTop, offsetLeft, offsetHeight } = currentBallRef.current;
-        console.log(
-          "OFFSET X",
-          currentBallRef.current.getBoundingClientRect().x
-        );
+        let currentBallRect = currentBallRef.current.getBoundingClientRect();
+        if (
+          boardDimension.left >= currentBallRect.x ||
+          boardDimension.right - currentBallRect.width <= currentBallRect.x
+        ) {
+          xOffset = -xOffset;
+        }
+
+        if (boardDimension.top >= currentBallRect.y) {
+          dispatch(shoot());
+          dispatch(setNewBallTrigger());
+          return;
+        }
 
         window.requestAnimationFrame(moveBall);
       };
 
       window.requestAnimationFrame(moveBall);
     }
-  }, [trajectoryAngle, isShooting, currentBallRef]);
+  }, [trajectoryAngle, boardDimension, currentBallRef, isShooting]);
 };

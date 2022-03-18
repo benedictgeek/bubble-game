@@ -12,7 +12,7 @@ export const ballSlice = createSlice({
     },
 
     shoot: (state) => {
-      state.isShooting = true;
+      state.isShooting = !state.isShooting;
     },
 
     resetTrajectoryAngle: (state) => {

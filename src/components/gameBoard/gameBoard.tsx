@@ -6,21 +6,17 @@ import { Ball } from "../ball/ball";
 import styles from "./gameBoard.module.scss";
 
 export const GameBoard = () => {
-  const [ballRefs, setBallRefs] = useState<React.MutableRefObject<any>[]>([]);
-  // const {} = useSelector((state: any) => state.gameSlice);
-  let addBallRefs = useCallback((ref) => {
-    setBallRefs((prevRefs) => {
-      let updatedRefs = [...prevRefs];
-      updatedRefs.push(ref);
+  // const [ballRefs, setBallRefs] = useState<React.MutableRefObject<any>[]>([]);
+  const { newBallTrigger } = useSelector((state: any) => state.gameSlice);
+  // let addBallRefs = useCallback((ref) => {
+  //   setBallRefs((prevRefs) => {
+  //     let updatedRefs = [...prevRefs];
+  //     updatedRefs.push(ref);
 
-      dispatch(setCurrentBallRef(ref));
-
-      return updatedRefs;
-    });
-  }, []);
-  const [balls, setBalls] = useState<JSX.Element[]>(() => [
-    <Ball key={0} ref={addBallRefs} />,
-  ]);
+  //     return updatedRefs;
+  //   });
+  // }, []);
+  const [balls, setBalls] = useState<JSX.Element[]>(() => [<Ball key={0} />]);
   let boardRef = useRef<any>(null);
   const dispatch = useDispatch();
 
@@ -29,6 +25,14 @@ export const GameBoard = () => {
       setBoardDimension(boardRef.current?.getBoundingClientRect().toJSON())
     );
   }, []);
+
+  useEffect(() => {
+    if (newBallTrigger > 0) {
+      setBalls((balls: any) => {
+        return [...balls, <Ball key={newBallTrigger} />];
+      });
+    }
+  }, [newBallTrigger]);
 
   return (
     <div ref={boardRef} className={styles.boardContainer}>
