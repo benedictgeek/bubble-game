@@ -1,11 +1,16 @@
-import { forwardRef, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useSelector } from "react-redux";
+import styles from "./ball.module.scss";
 
 export const Ball = forwardRef(({}, ref) => {
   const { trajectoryAngle, isShooting } = useSelector(
     (state: any) => state.playerBall
   );
+
+  const { boardDimension } = useSelector((state: any) => state.gameSlice);
+
   const ballRef = useRef(null);
+
   // useEffect(() => {
   //   gsap.to(ballRef.current, { x: width / 2 - 25, y: height - 50 });
   // }, [width, height]);
@@ -86,15 +91,37 @@ export const Ball = forwardRef(({}, ref) => {
   //   }
   // }, [isShooting]);
 
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        current: ballRef.current,
+      };
+    },
+    []
+  );
+
+  useEffect(() => {
+    console.log("BOARD DIM", boardDimension);
+  }, [boardDimension]);
+
   return (
-    <div
-      ref={ballRef}
-      style={{
-        width: 50,
-        height: 50,
-        borderRadius: " 50%",
-        backgroundColor: "red",
-      }}
-    ></div>
+    <>
+      {boardDimension && (
+        <div
+          // ref={ref}
+          ref={ballRef}
+          className={styles.ball}
+          style={{
+            width: 50,
+            height: 50,
+            top: boardDimension.top + boardDimension.height - 55,
+            left: boardDimension.width / 2 - 25,
+            borderRadius: " 50%",
+            backgroundColor: "red",
+          }}
+        ></div>
+      )}
+    </>
   );
 });

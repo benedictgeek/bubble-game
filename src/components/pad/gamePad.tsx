@@ -17,6 +17,14 @@ export const GamePad = () => {
 
   useEffect(() => {
     console.log("VALUEEE", playerBallValue.trajectoryAngle);
+    console.log(
+      "Y",
+      Math.sin((playerBallValue.trajectoryAngle * Math.PI) / 180)
+    );
+    console.log(
+      "X",
+      - Math.cos((playerBallValue.trajectoryAngle * Math.PI) / 180)
+    );
   }, [playerBallValue]);
 
   useEffect(() => {
