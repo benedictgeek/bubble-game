@@ -2,6 +2,7 @@ import gsap from "gsap";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setBoardDimension, setCurrentBallRef } from "../../state/gameSlice";
+import { random } from "../../utils/generate";
 import { Ball } from "../ball/ball";
 import styles from "./gameBoard.module.scss";
 
@@ -16,7 +17,8 @@ export const GameBoard = () => {
   //     return updatedRefs;
   //   });
   // }, []);
-  const [balls, setBalls] = useState<JSX.Element[]>(() => [<Ball key={0} />]);
+  let getBallColor = () => ["red", "green", "blue"][random(0, 3)]
+  const [balls, setBalls] = useState<JSX.Element[]>(() => [<Ball key={0} index={0} color={getBallColor()}/>]);
   let boardRef = useRef<any>(null);
   const dispatch = useDispatch();
 
@@ -29,10 +31,13 @@ export const GameBoard = () => {
   useEffect(() => {
     if (newBallTrigger > 0) {
       setBalls((balls: any) => {
-        return [...balls, <Ball key={newBallTrigger} />];
+        let color = getBallColor();
+        return [...balls, <Ball key={newBallTrigger} index={newBallTrigger} color={color} />];
       });
     }
   }, [newBallTrigger]);
+
+
 
   return (
     <div ref={boardRef} className={styles.boardContainer}>

@@ -1,19 +1,21 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addBallRef, setCurrentBallRef } from "../../state/gameSlice";
-import { random } from "../../utils/generate";
 import styles from "./ball.module.scss";
 
-export const Ball = ({}) => {
+export const Ball = ({ color, index }: { color: string; index: number }) => {
   const dispatch = useDispatch();
 
   const ballRef = useRef(null);
 
   // useImperativeHandle(
-  //   ref,
+  //   ballRef.current,
   //   () => {
   //     return {
-  //       current: ballRef.current,
+  //       current: {
+  //         ...(ballRef.current ? ballRef.current : {}),
+  //         mainColor: "testing ONE TWO",
+  //       },
   //     };
   //   },
   //   []
@@ -28,12 +30,13 @@ export const Ball = ({}) => {
     <>
       <div
         // ref={ref}
+        id={JSON.stringify({ color: color, index: index })}
         ref={ballRef}
         className={styles.ball}
         style={{
           width: 50,
           height: 50,
-          backgroundColor: ["red", "green", "blue"][random(0, 3)],
+          backgroundColor: color,
         }}
       ></div>
     </>
