@@ -9,7 +9,7 @@ export const usePlay = () => {
     (state: any) => state.playerBall
   );
 
-  const { currentBallRef, boardDimension } = useSelector(
+  const { currentBallRef, boardDimension, ballRefs } = useSelector(
     (state: any) => state.gameSlice
   );
 
@@ -40,7 +40,10 @@ export const usePlay = () => {
           xOffset = -xOffset;
         }
 
-        if (boardDimension.top >= currentBallRect.y) {
+        if (
+          isCollide(currentBallRef) ||
+          boardDimension.top >= currentBallRect.y
+        ) {
           dispatch(shoot());
           dispatch(setNewBallTrigger());
           return;
@@ -51,5 +54,39 @@ export const usePlay = () => {
 
       window.requestAnimationFrame(moveBall);
     }
-  }, [trajectoryAngle, boardDimension, currentBallRef, isShooting]);
+  }, [trajectoryAngle, boardDimension, currentBallRef, ballRefs, isShooting]);
+
+  let isCollide = (currentBallRef: any) => {
+    let currentBallRect = currentBallRef.current.getBoundingClientRect();
+
+    let getCenter = (currentBallRect: any) => {
+      return {
+        a: currentBallRect.x - currentBallRect.width / 2,
+        b: currentBallRect.y - currentBallRect.width / 2,
+      };
+    };
+
+    let currentBallCenter = getCenter(currentBallRect);
+
+    for (let index = 0; index < ballRefs.length; index++) {
+      const ballRef = ballRefs[index];
+
+      let currentBallRect = ballRef.current.getBoundingClientRect();
+
+      let center = getCenter(currentBallRect);
+
+      //remove moving ball from check
+      if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
+        continue;
+
+      let distance = Math.sqrt(
+        Math.pow(currentBallCenter.a - center.a, 2) +
+          Math.pow(currentBallCenter.b - center.b, 2)
+      );
+
+      if (distance <= currentBallRect.width) return true;
+    }
+
+    return false;
+  };
 };

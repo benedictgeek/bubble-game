@@ -7,11 +7,11 @@ export default configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these action types
-        ignoredActions: ["game/setCurrentBallRef"],
+        ignoredActions: ["game/setCurrentBallRef", "game/addBallRef"],
         // Ignore these field paths in all actions
         // ignoredActionPaths: ["meta.arg", "payload.timestamp"],
         // Ignore these paths in the state
-        ignoredPaths: ["gameSlice.currentBallRef.current"],
+        ignoredPaths: ["gameSlice.currentBallRef.current", "gameSlice.ballRefs"],
       },
     }),
   reducer: {

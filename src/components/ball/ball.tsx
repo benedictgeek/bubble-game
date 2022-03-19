@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentBallRef } from "../../state/gameSlice";
+import { addBallRef, setCurrentBallRef } from "../../state/gameSlice";
 import { random } from "../../utils/generate";
 import styles from "./ball.module.scss";
 
@@ -21,6 +21,7 @@ export const Ball = ({}) => {
 
   useEffect(() => {
     dispatch(setCurrentBallRef(ballRef));
+    dispatch(addBallRef(ballRef));
   }, []);
 
   return (
