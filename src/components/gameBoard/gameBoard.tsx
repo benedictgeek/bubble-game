@@ -7,18 +7,12 @@ import { Ball } from "../ball/ball";
 import styles from "./gameBoard.module.scss";
 
 export const GameBoard = () => {
-  // const [ballRefs, setBallRefs] = useState<React.MutableRefObject<any>[]>([]);
   const { newBallTrigger } = useSelector((state: any) => state.gameSlice);
-  // let addBallRefs = useCallback((ref) => {
-  //   setBallRefs((prevRefs) => {
-  //     let updatedRefs = [...prevRefs];
-  //     updatedRefs.push(ref);
 
-  //     return updatedRefs;
-  //   });
-  // }, []);
-  let getBallColor = () => ["red", "green", "blue"][random(0, 3)]
-  const [balls, setBalls] = useState<JSX.Element[]>(() => [<Ball key={0} index={0} color={getBallColor()}/>]);
+  let getBallColor = () => ["red", "green", "blue", "purple"][random(0, 4)];
+  const [balls, setBalls] = useState<JSX.Element[]>(() => [
+    <Ball key={0} index={0} color={getBallColor()} />,
+  ]);
   let boardRef = useRef<any>(null);
   const dispatch = useDispatch();
 
@@ -32,12 +26,13 @@ export const GameBoard = () => {
     if (newBallTrigger > 0) {
       setBalls((balls: any) => {
         let color = getBallColor();
-        return [...balls, <Ball key={newBallTrigger} index={newBallTrigger} color={color} />];
+        return [
+          ...balls,
+          <Ball key={newBallTrigger} index={newBallTrigger} color={color} />,
+        ];
       });
     }
   }, [newBallTrigger]);
-
-
 
   return (
     <div ref={boardRef} className={styles.boardContainer}>

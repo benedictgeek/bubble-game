@@ -44,9 +44,7 @@ export const usePlay = () => {
           isCollide(currentBallRef) ||
           boardDimension.top >= currentBallRect.y
         ) {
-          //temp
           handleSameBallsCheck(currentBallRef);
-          //temp
           dispatch(shoot());
           dispatch(setNewBallTrigger());
           return;
@@ -98,34 +96,55 @@ export const usePlay = () => {
   };
 
   let handleSameBallsCheck = (ballCollidingRef: any) => {
-    let res = [];
+    let res = [ballCollidingRef] as any[];
 
-    let currentBallColor = JSON.parse(ballCollidingRef.current.id).color;
-    let currentBallRect = ballCollidingRef.current.getBoundingClientRect();
+    let ballRefsCpy = [...ballRefs];
 
-    let currentBallCenter = getCenter(currentBallRect);
+    let getSurroundingMatchingBalls = (ballCollidingRef: any) => {
+      //remove already collected refs from ballRefsCpy
 
-    for (let index = 0; index < ballRefs.length; index++) {
-      const ballRef = ballRefs[index];
+      // for (let index = 0; index < res.length; index++) {
+      //   const collectedRef = res[index];
 
-      let currentBallRect = ballRef.current.getBoundingClientRect();
+      let collectedRefIndex = JSON.parse(ballCollidingRef.current.id).index;
 
-      let center = getCenter(currentBallRect);
+      ballRefsCpy.splice(collectedRefIndex, 1);
+      // }
 
-      //remove moving ball from check
-      if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
-        continue;
+      let surroundingBalls = [];
+      let currentBallColor = JSON.parse(ballCollidingRef.current.id).color;
+      let currentBallRect = ballCollidingRef.current.getBoundingClientRect();
 
-      let distance = getDistance(currentBallCenter, center);
-      let checkingBallColor = JSON.parse(ballRef.current.id).color;
-      if (
-        distance <= currentBallRect.width &&
-        currentBallColor == checkingBallColor
-      ) {
-        res.push(ballRef);
+      let currentBallCenter = getCenter(currentBallRect);
+
+      for (let index = 0; index < ballRefsCpy.length; index++) {
+        const ballRef = ballRefsCpy[index];
+
+        let currentBallRect = ballRef.current.getBoundingClientRect();
+
+        let center = getCenter(currentBallRect);
+
+        //remove moving ball from check
+        if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
+          continue;
+
+        let distance = getDistance(currentBallCenter, center);
+        let checkingBallColor = JSON.parse(ballRef.current.id).color;
+        if (
+          distance <= currentBallRect.width &&
+          currentBallColor == checkingBallColor
+        ) {
+          surroundingBalls.push(ballRef);
+          res.push(ballRef);
+        }
       }
-    }
-
+      console.log("TOTAL SAME BALLS IN PATH--->", surroundingBalls);
+      for (let index = 0; index < surroundingBalls.length; index++) {
+        const ball = surroundingBalls[index];
+        getSurroundingMatchingBalls(ball);
+      }
+    };
+    getSurroundingMatchingBalls(ballCollidingRef);
     console.log("TOTAL SAME BALLS IN PATH", res);
   };
 };
