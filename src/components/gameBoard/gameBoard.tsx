@@ -16,10 +16,11 @@ import { usePlayerContext } from "../../state/contextProviders/playerContext";
 
 export const GameBoard = () => {
   let {
-    state: { newBallTrigger, ballsRefsInPath, ballRefs },
+    state: { newBallTrigger, ballsRefsInPath, ballRefs, score },
     setBoardDimensionDispatch,
     setBallRefsInPathDispatch,
     setNewBallTriggerDispatch,
+    setScoreDispatch,
   } = useGameContext();
 
   let getBallColor = () => ["red", "green", "purple", "blue"][random(0, 4)];
@@ -65,6 +66,7 @@ export const GameBoard = () => {
           setBallRefsInPathDispatch([]);
           setBalls(ballsCpy);
           setNewBallTriggerDispatch();
+          setScoreDispatch(score + 3);
         },
       });
       t1.pause();
@@ -74,7 +76,7 @@ export const GameBoard = () => {
       }
       t1.duration(0.3).play();
     }
-  }, [balls, ballRefs, ballsRefsInPath]);
+  }, [balls, ballRefs, ballsRefsInPath, score]);
 
   let ballsArray = useMemo(() => {
     return Object.entries(balls).map(([_, value]) => value);

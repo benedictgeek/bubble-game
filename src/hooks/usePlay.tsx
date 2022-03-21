@@ -10,7 +10,7 @@ export const usePlay = () => {
   } = usePlayerContext();
 
   let {
-    state: { currentBallRef, boardDimension, ballRefs },
+    state: { currentBallRef, boardDimension, ballRefs, score },
     setNewBallTriggerDispatch,
     updateBallRefsDispatch,
     setBallRefsInPathDispatch,
@@ -98,6 +98,10 @@ export const usePlay = () => {
     return false;
   };
 
+  let ballRefsArray = (ballRefs: {}) => {
+    return Object.entries(ballRefs).map(([_, value]) => value) as any[];
+  };
+
   let handleSameBallsCheck = (ballCollidingRef: any) => {
     let res = [ballCollidingRef] as any[];
     let _ballRefs = Object.entries(ballRefs).map(
@@ -159,4 +163,46 @@ export const usePlay = () => {
 
     return res;
   };
+
+  useEffect(() => {
+    //get all refs that are hanging freelly except the currentRef
+    if (isShooting == false && score > 0) {
+      if (currentBallRef.current != null) {
+        let currentBallRect = currentBallRef.current.getBoundingClientRect();
+        console.log(currentBallRect, boardDimension);
+        if (currentBallRect.bottom == boardDimension.bottom - 2) {
+          return;
+        }
+      }
+
+      let res = [];
+      let ballRefsCpy = { ...ballRefs };
+      // delete ballRefsCpy[JSON.parse(currentBallRef?.current.id).id];
+
+      let ballRefsArr = ballRefsArray(ballRefsCpy);
+
+      for (let index = 0; index < ballRefsArr.length; index++) {
+        let numberOfSiblings = 0;
+        const outterRef = ballRefsArr[index];
+        let currentBallRect = outterRef.current.getBoundingClientRect();
+        let center = getCenter(currentBallRect);
+        for (let index = 0; index < ballRefsArr.length; index++) {
+          const innerRef = ballRefsArr[index];
+          if (innerRef == outterRef) continue;
+          let currentBallRect = innerRef.current.getBoundingClientRect();
+          let currentBallCenter = getCenter(currentBallRect);
+          let distance = getDistance(currentBallCenter, center);
+          if (numberOfSiblings > 0) break;
+          if (distance <= currentBallRect.width) {
+            numberOfSiblings++;
+          }
+        }
+        if (numberOfSiblings == 0) {
+          res.push(outterRef);
+        }
+      }
+
+      console.log(res);
+    }
+  }, [isShooting, boardDimension, currentBallRef, ballRefs, score]);
 };

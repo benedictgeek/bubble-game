@@ -7,6 +7,7 @@ import {
   ADD_BALL_REF,
   UPDATE_BALL_REFS,
   SET_BALL_REFS_IN_PATH,
+  SET_SCORE,
 } from "./types";
 
 export interface ActionTypes {
@@ -45,6 +46,12 @@ export const reducer = (state: StateTypes, action: ActionTypes) => {
       return {
         ...state,
         ballsRefsInPath: action.payload,
+      };
+
+    case SET_SCORE:
+      return {
+        ...state,
+        score: action.payload,
       };
 
     default:

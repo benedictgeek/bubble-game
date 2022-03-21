@@ -8,28 +8,54 @@ import {
   ADD_BALL_REF,
   UPDATE_BALL_REFS,
   SET_BALL_REFS_IN_PATH,
+  SET_SCORE,
 } from "./types";
 
-export let setBoardDimension = (payload: any, dispatch: React.Dispatch<ActionTypes>) => {
+export let setBoardDimension = (
+  payload: any,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
   dispatch({ type: SET_BALL_DIMENSION, payload: payload });
 };
 
-export let setCurrentBallRef = (payload: any, dispatch: React.Dispatch<ActionTypes>) => {
+export let setCurrentBallRef = (
+  payload: any,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
   dispatch({ type: SET_CURRENT_BALL_REF, payload: payload });
 };
 
-export let setNewBallTrigger = (_: any, dispatch: React.Dispatch<ActionTypes>) => {
+export let setNewBallTrigger = (
+  _: any,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
   dispatch({ type: SET_NEW_BALL_TRIGGER, payload: null });
 };
 
-export let addBallRef = (payload: ObjectLiteral, dispatch: React.Dispatch<ActionTypes>) => {
+export let addBallRef = (
+  payload: ObjectLiteral,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
   dispatch({ type: ADD_BALL_REF, payload: payload });
 };
 
-export let updateBallRefs = (payload: ObjectLiteral, dispatch: React.Dispatch<ActionTypes>) => {
+export let updateBallRefs = (
+  payload: ObjectLiteral,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
   dispatch({ type: UPDATE_BALL_REFS, payload: payload });
 };
 
-export let setBallRefsInPath = (payload: ObjectLiteral[], dispatch: React.Dispatch<ActionTypes>) => {
+export let setBallRefsInPath = (
+  payload: ObjectLiteral[],
+  dispatch: React.Dispatch<ActionTypes>
+) => {
   dispatch({ type: SET_BALL_REFS_IN_PATH, payload: payload });
+};
+
+export let setScore = (
+  payload: number,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
+  dispatch({ type: SET_SCORE, payload: payload });
 };
