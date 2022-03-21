@@ -16,14 +16,13 @@ export const usePlay = () => {
     setBallRefsInPathDispatch,
   } = useGameContext();
 
-
-
   useEffect(() => {
     if (isShooting) {
       let yOffset = -Math.sin((trajectoryAngle * Math.PI) / 180);
       let xOffset = -Math.cos((trajectoryAngle * Math.PI) / 180);
 
       let moveBall = (timestamp: number) => {
+        if (currentBallRef.current == null) return;
         gsap.to(currentBallRef.current, {
           x: "+=" + xOffset * 4,
           y: "+=" + yOffset * 4,
@@ -160,7 +159,14 @@ export const usePlay = () => {
 
     getSurroundingMatchingBalls(ballCollidingRef);
     if (res.length >= 3) {
-      // updateBallRefsDispatch({});
+      let refsCpy = { ...ballRefs };
+      for (let index = 0; index < res.length; index++) {
+        const ref = res[index];
+        let id = JSON.parse(ref.current.id).id;
+
+        delete refsCpy[id];
+      }
+      updateBallRefsDispatch(refsCpy);
       setBallRefsInPathDispatch(res);
     }
 

@@ -20,7 +20,7 @@ export const GameBoard = () => {
     setBallRefsInPathDispatch,
   } = useGameContext();
 
-  let getBallColor = () => ["red", "red", "red", "red"][random(0, 4)];
+  let getBallColor = () => ["red", "green", "purple", "blue"][random(0, 4)];
   const [balls, setBalls] = useState<{}>(() => {
     let id = uuidv4();
     return {
@@ -49,32 +49,20 @@ export const GameBoard = () => {
 
   useEffect(() => {
     if (ballsRefsInPath.length > 0) {
-      console.log("BALL PATHS GOTTEN--->", ballsRefsInPath);
       let ballsCpy = { ...balls } as any;
       for (let index = 0; index < ballsRefsInPath.length; index++) {
         const ref = ballsRefsInPath[index];
 
-        // console.log(JSON.parse(ref.current.id).id);
-
-        // let collectedRefIndex = JSON.parse(ballCollidingRef.current.id).id;
-        let id;
-        try {
-          id = JSON.parse(ref.current.id).id;
-        } catch (error) {
-          continue;
-        }
+        let id = JSON.parse(ref.current.id).id;
 
         delete ballsCpy[id];
       }
-      console.log("OBJS COPY--->", ballsCpy);
-      console.log("CLEARED REFS ---->", ballRefs);
       setBallRefsInPathDispatch([]);
       setBalls(ballsCpy);
     }
   }, [balls, ballRefs, ballsRefsInPath]);
 
   let ballsArray = useMemo(() => {
-    console.log("BALLS MAPPING --->", balls);
     return Object.entries(balls).map(([_, value]) => value);
   }, [balls]);
 
