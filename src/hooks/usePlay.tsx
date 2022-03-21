@@ -28,12 +28,7 @@ export const usePlay = () => {
           y: "+=" + yOffset * 4,
           duration: 0,
         });
-        // currentBallRef.current.offsetLeft =
-        //   currentBallRef.current.getBoundingClientRect().x + xOffset;
-        // currentBallRef.current.offsetTop =
-        //   currentBallRef.current.getBoundingClientRect().y + yOffset;
 
-        // let { offsetTop, offsetLeft, offsetHeight } = currentBallRef.current;
         let currentBallRect = currentBallRef.current.getBoundingClientRect();
         if (
           boardDimension.left >= currentBallRect.x ||
@@ -46,9 +41,11 @@ export const usePlay = () => {
           isCollide(currentBallRef) ||
           boardDimension.top >= currentBallRect.y
         ) {
-          handleSameBallsCheck(currentBallRef);
-          shootDispatch();
-          setNewBallTriggerDispatch();
+          let res = handleSameBallsCheck(currentBallRef);
+          if (res.length < 3) {
+            shootDispatch();
+            setNewBallTriggerDispatch();
+          }
           return;
         }
 
@@ -108,20 +105,10 @@ export const usePlay = () => {
     ) as any[];
     let ballRefsCpy = [..._ballRefs];
 
-    console.log("TOTAL STUFF", ballRefsCpy);
-
     let getSurroundingMatchingBalls = (ballCollidingRef: any) => {
-      //remove already collected refs from ballRefsCpy
-
-      // for (let index = 0; index < res.length; index++) {
-      //   const collectedRef = res[index];
-
-      // let collectedRefIndex = JSON.parse(ballCollidingRef.current.id).id;
-
       let collectedRefIndex = ballRefsCpy.indexOf(ballCollidingRef);
 
       ballRefsCpy.splice(collectedRefIndex, 1);
-      // }
 
       let surroundingBalls = [];
       let currentBallColor = JSON.parse(ballCollidingRef.current.id).color;
@@ -150,7 +137,6 @@ export const usePlay = () => {
           res.push(ballRef);
         }
       }
-      console.log("TOTAL SAME BALLS IN PATH--->", surroundingBalls);
       for (let index = 0; index < surroundingBalls.length; index++) {
         const ball = surroundingBalls[index];
         getSurroundingMatchingBalls(ball);
@@ -166,11 +152,10 @@ export const usePlay = () => {
 
         delete refsCpy[id];
       }
+      shootDispatch();
       updateBallRefsDispatch(refsCpy);
       setBallRefsInPathDispatch(res);
     }
-
-    console.log("TOTAL SAME BALLS IN PATH", res);
 
     return res;
   };

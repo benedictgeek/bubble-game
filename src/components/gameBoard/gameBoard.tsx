@@ -12,12 +12,14 @@ import { Ball } from "../ball/ball";
 import styles from "./gameBoard.module.scss";
 import { v4 as uuidv4 } from "uuid";
 import { useGameContext } from "../../state/contextProviders/gameContext";
+import { usePlayerContext } from "../../state/contextProviders/playerContext";
 
 export const GameBoard = () => {
   let {
     state: { newBallTrigger, ballsRefsInPath, ballRefs },
     setBoardDimensionDispatch,
     setBallRefsInPathDispatch,
+    setNewBallTriggerDispatch,
   } = useGameContext();
 
   let getBallColor = () => ["red", "green", "purple", "blue"][random(0, 4)];
@@ -57,8 +59,20 @@ export const GameBoard = () => {
 
         delete ballsCpy[id];
       }
-      setBallRefsInPathDispatch([]);
-      setBalls(ballsCpy);
+      let t1 = gsap.timeline({
+        repeat: 4,
+        onComplete: () => {
+          setBallRefsInPathDispatch([]);
+          setBalls(ballsCpy);
+          setNewBallTriggerDispatch();
+        },
+      });
+      t1.pause();
+      for (let index = 0; index < ballsRefsInPath.length; index++) {
+        const ref = ballsRefsInPath[index];
+        t1.fromTo(ref.current, { opacity: 1 }, { opacity: 0.5 }, 0);
+      }
+      t1.duration(0.3).play();
     }
   }, [balls, ballRefs, ballsRefsInPath]);
 
