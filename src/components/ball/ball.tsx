@@ -1,12 +1,11 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addBallRef, setCurrentBallRef } from "../../state/gameSlice";
+import { useGameContext } from "../../state/contextProviders/gameContext";
 import styles from "./ball.module.scss";
 
-export const Ball = ({ color, index }: { color: string; index: number }) => {
-  const dispatch = useDispatch();
+export const Ball = ({ color, id }: { color: string; id: string }) => {
+  let { setCurrentBallRefDispatch, addBallRefDispatch } = useGameContext();
 
-  const ballRef = useRef(null);
+  const ballRef = useRef<HTMLDivElement | null>(null);
 
   // useImperativeHandle(
   //   ballRef.current,
@@ -22,23 +21,25 @@ export const Ball = ({ color, index }: { color: string; index: number }) => {
   // );
 
   useEffect(() => {
-    dispatch(setCurrentBallRef(ballRef));
-    dispatch(addBallRef(ballRef));
+    setCurrentBallRefDispatch(ballRef);
+    addBallRefDispatch({ [id]: ballRef });
+
+    // return () => {
+    //   ballRef.current = null;
+    // };
   }, []);
 
   return (
-    <>
-      <div
-        // ref={ref}
-        id={JSON.stringify({ color: color, index: index })}
-        ref={ballRef}
-        className={styles.ball}
-        style={{
-          width: 50,
-          height: 50,
-          backgroundColor: color,
-        }}
-      ></div>
-    </>
+    <div
+      // ref={ref}
+      id={JSON.stringify({ color: color, id: id })}
+      ref={ballRef}
+      className={styles.ball}
+      style={{
+        width: 50,
+        height: 50,
+        backgroundColor: color,
+      }}
+    ></div>
   );
 };

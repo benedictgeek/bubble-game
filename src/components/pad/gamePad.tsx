@@ -1,10 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  updateTrajectoryAngle,
-  resetTrajectoryAngle,
-  shoot,
-} from "../../state/playerBallSlice";
+import { usePlayerContext } from "../../state/contextProviders/playerContext";
+
 import styles from "./pad.module.scss";
 
 export const GamePad = () => {
@@ -12,8 +8,11 @@ export const GamePad = () => {
   const padWidth = 100;
   const padRef = useRef(null);
 
-  const { isShooting } = useSelector((state: any) => state.playerBall);
-  const dispatch = useDispatch();
+  let {
+    state: { isShooting },
+    updateTrajectoryAngleDispatch,
+    shootDispatch,
+  } = usePlayerContext();
 
   useEffect(() => {
     let padIdentifier: any = padRef.current;
@@ -37,11 +36,11 @@ export const GamePad = () => {
             padWidth / 2 - event.offsetX
           ) * 180
         ) / Math.PI;
-      dispatch(updateTrajectoryAngle(angle));
+      updateTrajectoryAngleDispatch(angle);
     }
   };
 
-  let mouseDownEventHandler = () => dispatch(shoot());
+  let mouseDownEventHandler = () => shootDispatch();
 
   useEffect(() => {
     if (isShooting) {

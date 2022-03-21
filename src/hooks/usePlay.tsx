@@ -1,19 +1,22 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import gsap from "gsap";
-import { setNewBallTrigger } from "../state/gameSlice";
-import { shoot } from "../state/playerBallSlice";
+import { usePlayerContext } from "../state/contextProviders/playerContext";
+import { useGameContext } from "../state/contextProviders/gameContext";
 
 export const usePlay = () => {
-  const { trajectoryAngle, isShooting } = useSelector(
-    (state: any) => state.playerBall
-  );
+  let {
+    state: { trajectoryAngle, isShooting },
+    shootDispatch,
+  } = usePlayerContext();
 
-  const { currentBallRef, boardDimension, ballRefs } = useSelector(
-    (state: any) => state.gameSlice
-  );
+  let {
+    state: { currentBallRef, boardDimension, ballRefs },
+    setNewBallTriggerDispatch,
+    updateBallRefsDispatch,
+    setBallRefsInPathDispatch,
+  } = useGameContext();
 
-  const dispatch = useDispatch();
+
 
   useEffect(() => {
     if (isShooting) {
@@ -45,8 +48,8 @@ export const usePlay = () => {
           boardDimension.top >= currentBallRect.y
         ) {
           handleSameBallsCheck(currentBallRef);
-          dispatch(shoot());
-          dispatch(setNewBallTrigger());
+          shootDispatch();
+          setNewBallTriggerDispatch();
           return;
         }
 
@@ -76,8 +79,12 @@ export const usePlay = () => {
 
     let currentBallCenter = getCenter(currentBallRect);
 
-    for (let index = 0; index < ballRefs.length; index++) {
-      const ballRef = ballRefs[index];
+    let _ballRefs = Object.entries(ballRefs).map(
+      ([_, value]) => value
+    ) as any[];
+
+    for (let index = 0; index < _ballRefs.length; index++) {
+      const ballRef = _ballRefs[index];
 
       let currentBallRect = ballRef.current.getBoundingClientRect();
 
@@ -97,8 +104,12 @@ export const usePlay = () => {
 
   let handleSameBallsCheck = (ballCollidingRef: any) => {
     let res = [ballCollidingRef] as any[];
+    let _ballRefs = Object.entries(ballRefs).map(
+      ([_, value]) => value
+    ) as any[];
+    let ballRefsCpy = [..._ballRefs];
 
-    let ballRefsCpy = [...ballRefs];
+    console.log("TOTAL STUFF", ballRefsCpy);
 
     let getSurroundingMatchingBalls = (ballCollidingRef: any) => {
       //remove already collected refs from ballRefsCpy
@@ -106,7 +117,9 @@ export const usePlay = () => {
       // for (let index = 0; index < res.length; index++) {
       //   const collectedRef = res[index];
 
-      let collectedRefIndex = JSON.parse(ballCollidingRef.current.id).index;
+      // let collectedRefIndex = JSON.parse(ballCollidingRef.current.id).id;
+
+      let collectedRefIndex = ballRefsCpy.indexOf(ballCollidingRef);
 
       ballRefsCpy.splice(collectedRefIndex, 1);
       // }
@@ -144,7 +157,15 @@ export const usePlay = () => {
         getSurroundingMatchingBalls(ball);
       }
     };
+
     getSurroundingMatchingBalls(ballCollidingRef);
+    if (res.length >= 3) {
+      // updateBallRefsDispatch({});
+      setBallRefsInPathDispatch(res);
+    }
+
     console.log("TOTAL SAME BALLS IN PATH", res);
+
+    return res;
   };
 };
