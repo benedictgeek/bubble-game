@@ -23,7 +23,7 @@ export const GameBoard = () => {
     setScoreDispatch,
   } = useGameContext();
 
-  let getBallColor = () => ["red", "green", "purple", "blue"][random(0, 4)];
+  let getBallColor = () => ["red", "blue", "red", "blue"][random(0, 4)];
   const [balls, setBalls] = useState<{}>(() => {
     let id = uuidv4();
     return {

@@ -102,52 +102,63 @@ export const usePlay = () => {
     return Object.entries(ballRefs).map(([_, value]) => value) as any[];
   };
 
-  let handleSameBallsCheck = (ballCollidingRef: any) => {
-    let res = [ballCollidingRef] as any[];
-    let _ballRefs = Object.entries(ballRefs).map(
-      ([_, value]) => value
-    ) as any[];
-    let ballRefsCpy = [..._ballRefs];
+  let getSurroundingMatchingBalls = (
+    ballCollidingRef: any,
+    ballRefsCpy: any[],
+    resultArr: any[],
+    checkColor = true
+  ) => {
+    let collectedRefIndex = ballRefsCpy.indexOf(ballCollidingRef);
 
-    let getSurroundingMatchingBalls = (ballCollidingRef: any) => {
-      let collectedRefIndex = ballRefsCpy.indexOf(ballCollidingRef);
+    ballRefsCpy.splice(collectedRefIndex, 1);
 
-      ballRefsCpy.splice(collectedRefIndex, 1);
+    let surroundingBalls = [];
+    let currentBallColor = JSON.parse(ballCollidingRef.current.id).color;
+    let currentBallRect = ballCollidingRef.current.getBoundingClientRect();
 
-      let surroundingBalls = [];
-      let currentBallColor = JSON.parse(ballCollidingRef.current.id).color;
-      let currentBallRect = ballCollidingRef.current.getBoundingClientRect();
+    let currentBallCenter = getCenter(currentBallRect);
 
-      let currentBallCenter = getCenter(currentBallRect);
+    for (let index = 0; index < ballRefsCpy.length; index++) {
+      const ballRef = ballRefsCpy[index];
 
-      for (let index = 0; index < ballRefsCpy.length; index++) {
-        const ballRef = ballRefsCpy[index];
+      let currentBallRect = ballRef.current.getBoundingClientRect();
 
-        let currentBallRect = ballRef.current.getBoundingClientRect();
+      let center = getCenter(currentBallRect);
 
-        let center = getCenter(currentBallRect);
+      //remove moving ball from check
+      if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
+        continue;
 
-        //remove moving ball from check
-        if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
-          continue;
+      let distance = getDistance(currentBallCenter, center);
+      let checkingBallColor = JSON.parse(ballRef.current.id).color;
 
-        let distance = getDistance(currentBallCenter, center);
-        let checkingBallColor = JSON.parse(ballRef.current.id).color;
+      if (checkColor) {
         if (
           distance <= currentBallRect.width &&
           currentBallColor == checkingBallColor
         ) {
           surroundingBalls.push(ballRef);
-          res.push(ballRef);
+          resultArr.push(ballRef);
         }
+      } else if (distance <= currentBallRect.width) {
+        surroundingBalls.push(ballRef);
+        resultArr.push(ballRef);
       }
-      for (let index = 0; index < surroundingBalls.length; index++) {
-        const ball = surroundingBalls[index];
-        getSurroundingMatchingBalls(ball);
-      }
-    };
+    }
+    for (let index = 0; index < surroundingBalls.length; index++) {
+      const ball = surroundingBalls[index];
+      getSurroundingMatchingBalls(ball, ballRefsCpy, resultArr, checkColor);
+    }
 
-    getSurroundingMatchingBalls(ballCollidingRef);
+    return surroundingBalls;
+  };
+
+  let handleSameBallsCheck = (ballCollidingRef: any) => {
+    let res = [ballCollidingRef] as any[];
+
+    let ballRefsCpy = ballRefsArray({ ...ballRefs });
+
+    getSurroundingMatchingBalls(ballCollidingRef, ballRefsCpy, res, true);
     if (res.length >= 3) {
       let refsCpy = { ...ballRefs };
       for (let index = 0; index < res.length; index++) {
@@ -175,34 +186,34 @@ export const usePlay = () => {
         }
       }
 
-      let res = [];
+      //get all balls hugging the top
+      let res = [] as any[];
+      let topBalls = [];
       let ballRefsCpy = { ...ballRefs };
-      // delete ballRefsCpy[JSON.parse(currentBallRef?.current.id).id];
 
       let ballRefsArr = ballRefsArray(ballRefsCpy);
-
       for (let index = 0; index < ballRefsArr.length; index++) {
-        let numberOfSiblings = 0;
-        const outterRef = ballRefsArr[index];
-        let currentBallRect = outterRef.current.getBoundingClientRect();
-        let center = getCenter(currentBallRect);
-        for (let index = 0; index < ballRefsArr.length; index++) {
-          const innerRef = ballRefsArr[index];
-          if (innerRef == outterRef) continue;
-          let currentBallRect = innerRef.current.getBoundingClientRect();
-          let currentBallCenter = getCenter(currentBallRect);
-          let distance = getDistance(currentBallCenter, center);
-          if (numberOfSiblings > 0) break;
-          if (distance <= currentBallRect.width) {
-            numberOfSiblings++;
-          }
-        }
-        if (numberOfSiblings == 0) {
-          res.push(outterRef);
+        const element = ballRefsArr[index];
+        let currentBallRect = element.current.getBoundingClientRect();
+        if (currentBallRect.top <= boardDimension.top) {
+          topBalls.push(element);
         }
       }
 
-      console.log(res);
+      for (let index = 0; index < topBalls.length; index++) {
+        const topBallRef = topBalls[index];
+        res.push(topBallRef);
+        console.log(
+          getSurroundingMatchingBalls(topBallRef, ballRefsArr, res, false)
+        );
+      }
+
+      console.log(
+        "CHECK---->",
+        ballRefsArr.filter((ref) => !res.includes(ref))
+      );
+
+      return;
     }
   }, [isShooting, boardDimension, currentBallRef, ballRefs, score]);
 };
