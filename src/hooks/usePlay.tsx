@@ -179,11 +179,7 @@ export const usePlay = () => {
     //get all refs that are hanging freelly except the currentRef
     if (isShooting == false && score > 0) {
       if (currentBallRef.current != null) {
-        let currentBallRect = currentBallRef.current.getBoundingClientRect();
-        console.log(currentBallRect, boardDimension);
-        if (currentBallRect.bottom == boardDimension.bottom - 2) {
-          return;
-        }
+        return;
       }
 
       //get all balls hugging the top
@@ -208,10 +204,35 @@ export const usePlay = () => {
         );
       }
 
-      console.log(
-        "CHECK---->",
-        ballRefsArr.filter((ref) => !res.includes(ref))
-      );
+      let hangingBalls = ballRefsArr
+        .filter((ref) => !res.includes(ref))
+        .sort(
+          (a, b) =>
+            a.current.getBoundingClientRect().top -
+            b.current.getBoundingClientRect().top
+        );
+
+      // let t1 = gsap.timeline({
+      //   repeat: 4,
+
+      //   onComplete: () => {},
+      // });
+      // t1.pause();
+      let yOffset = -Math.sin((90 * Math.PI) / 180);
+      let moveSinlgeHangingBall = (ref: any, delay: number) => {
+        let moveHang = () => {
+          gsap.to(ref.current, { y: "+=" + yOffset * 6, delay });
+
+          requestAnimationFrame(moveHang);
+        };
+
+        requestAnimationFrame(moveHang);
+      };
+
+      for (let index = 0; index < hangingBalls.length; index++) {
+        const ref = hangingBalls[index];
+        moveSinlgeHangingBall(ref, 0.1 * index);
+      }
 
       return;
     }
