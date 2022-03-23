@@ -212,27 +212,59 @@ export const usePlay = () => {
             b.current.getBoundingClientRect().top
         );
 
-      // let t1 = gsap.timeline({
-      //   repeat: 4,
+      let t1 = gsap.timeline({
+        paused: true,
+        // repeat: -1,
+        // repeatRefresh: true,
+        // autoRemoveChildren
+        onComplete: () => {
+          console.log("DONE SHAKING OFF HANGING!!");
+        },
+      });
+      // let moveSinlgeHangingBall = (ref: any, delay: number) => {
+      //   console.log("DELAY", delay);
+      //   let moveHang = () => {
+      //     gsap.to(ref.current, { y: "+=" + yOffset * 6, delay });
 
-      //   onComplete: () => {},
-      // });
-      // t1.pause();
-      let yOffset = -Math.sin((90 * Math.PI) / 180);
-      let moveSinlgeHangingBall = (ref: any, delay: number) => {
-        let moveHang = () => {
-          gsap.to(ref.current, { y: "+=" + yOffset * 6, delay });
+      //     if (
+      //       isCollide(ref)
+      //       // ||
+      //       // boardDimension.top >= ref.current.getBoundingClientRect().y
+      //     ) {
+      //       return;
+      //     }
 
-          requestAnimationFrame(moveHang);
-        };
+      //     requestAnimationFrame(moveHang);
+      //   };
 
-        requestAnimationFrame(moveHang);
-      };
+      //   requestAnimationFrame(moveHang);
+      // };
+
+      // for (let index = 0; index < hangingBalls.length; index++) {
+      //   const ref = hangingBalls[index];
+      //   moveSinlgeHangingBall(ref, 0.1 * index * hangingBalls.length);
+      // }
 
       for (let index = 0; index < hangingBalls.length; index++) {
         const ref = hangingBalls[index];
-        moveSinlgeHangingBall(ref, 0.1 * index);
+        t1.to(
+          ref.current,
+          {
+            y: 50 * 3,
+            x: 50 * (index % 2 == 0 ? -3 : 3),
+            opacity: 0,
+
+            zIndex: 5,
+            // ease: "none",
+            // repeat: -1,
+            // repeatRefresh: true,
+          },
+          // "+=0.1"
+          0
+        );
       }
+
+      t1.totalDuration(2).play();
 
       return;
     }
