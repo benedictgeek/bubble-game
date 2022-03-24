@@ -14,6 +14,7 @@ export const usePlay = () => {
     setNewBallTriggerDispatch,
     updateBallRefsDispatch,
     setBallRefsInPathDispatch,
+    setScoreDispatch,
   } = useGameContext();
 
   useEffect(() => {
@@ -54,7 +55,14 @@ export const usePlay = () => {
 
       window.requestAnimationFrame(moveBall);
     }
-  }, [trajectoryAngle, boardDimension, currentBallRef, ballRefs, isShooting]);
+  }, [
+    trajectoryAngle,
+    boardDimension,
+    currentBallRef,
+    ballRefs,
+    isShooting,
+    score,
+  ]);
 
   let getCenter = (currentBallRect: any) => {
     return {
@@ -70,17 +78,21 @@ export const usePlay = () => {
     );
   };
 
+  let ballRefsArray = (ballRefs: {}) => {
+    return Object.entries(ballRefs).map(([_, value]) => value) as any[];
+  };
+
   let isCollide = (currentBallRef: any) => {
     let currentBallRect = currentBallRef.current.getBoundingClientRect();
 
     let currentBallCenter = getCenter(currentBallRect);
 
-    let _ballRefs = Object.entries(ballRefs).map(
-      ([_, value]) => value
-    ) as any[];
+    let _ballRefs = ballRefsArray(ballRefs);
 
     for (let index = 0; index < _ballRefs.length; index++) {
       const ballRef = _ballRefs[index];
+
+      if (!ballRef.current) continue;
 
       let currentBallRect = ballRef.current.getBoundingClientRect();
 
@@ -89,6 +101,9 @@ export const usePlay = () => {
       //remove moving ball from check
       if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
         continue;
+      //removes hanging/falling balls to be compared with
+      let checkingBallColorZindex = ballRef?.current?.style.zIndex == 5;
+      if (checkingBallColorZindex) continue;
 
       let distance = getDistance(currentBallCenter, center);
 
@@ -96,10 +111,6 @@ export const usePlay = () => {
     }
 
     return false;
-  };
-
-  let ballRefsArray = (ballRefs: {}) => {
-    return Object.entries(ballRefs).map(([_, value]) => value) as any[];
   };
 
   let getSurroundingMatchingBalls = (
@@ -153,6 +164,17 @@ export const usePlay = () => {
     return surroundingBalls;
   };
 
+  let removeRefsFromRefsObject = (refsObject: any, refsList: any) => {
+    for (let index = 0; index < refsList.length; index++) {
+      const ref = refsList[index];
+      let id = JSON.parse(ref.current.id).id;
+
+      delete refsObject[id];
+    }
+
+    return refsObject;
+  };
+
   let handleSameBallsCheck = (ballCollidingRef: any) => {
     let res = [ballCollidingRef] as any[];
 
@@ -161,112 +183,104 @@ export const usePlay = () => {
     getSurroundingMatchingBalls(ballCollidingRef, ballRefsCpy, res, true);
     if (res.length >= 3) {
       let refsCpy = { ...ballRefs };
+
+      let t1 = gsap.timeline({
+        paused: true,
+        repeat: 4,
+        // autoRemoveChildren: true,
+        onComplete: () => {
+          //if completed animating matching balls
+          //check for hanging balls
+          for (let index = 0; index < res.length; index++) {
+            const ref = res[index];
+            gsap.to(ref.current, { opacity: 0 });
+          }
+
+          let hangingBalls = handleHangingBalls(ballRefsCpy);
+
+          if (hangingBalls.length > 0) {
+            // t1.to
+            let t2 = gsap.timeline({
+              paused: true,
+              // repeat: -1,
+              // repeatRefresh: true,
+              // autoRemoveChildren
+              onComplete: () => {
+                refsCpy = removeRefsFromRefsObject(refsCpy, [
+                  ...res,
+                  ...hangingBalls,
+                ]);
+                shootDispatch();
+                updateBallRefsDispatch(refsCpy);
+                setBallRefsInPathDispatch([...res, ...hangingBalls]);
+                setScoreDispatch(score + 3);
+                console.log("DONE SHAKING OFF HANGING!!");
+              },
+            });
+
+            for (let index = 0; index < hangingBalls.length; index++) {
+              const ref = hangingBalls[index];
+              t2.to(
+                ref.current,
+                {
+                  y: 50 * 3,
+                  x: 50 * (index % 2 == 0 ? -3 : 3),
+                  opacity: 0,
+                  zIndex: 5,
+                },
+                0
+              );
+            }
+
+            t2.totalDuration(2).play();
+          } else {
+            refsCpy = removeRefsFromRefsObject(refsCpy, res);
+            shootDispatch();
+            updateBallRefsDispatch(refsCpy);
+            setBallRefsInPathDispatch(res);
+            setScoreDispatch(score + 3);
+          }
+        },
+      });
+
       for (let index = 0; index < res.length; index++) {
         const ref = res[index];
-        let id = JSON.parse(ref.current.id).id;
-
-        delete refsCpy[id];
+        t1.fromTo(ref.current, { opacity: 1 }, { opacity: 0.5 }, 0);
       }
-      shootDispatch();
-      updateBallRefsDispatch(refsCpy);
-      setBallRefsInPathDispatch(res);
+      t1.duration(0.3).play();
     }
 
     return res;
   };
 
-  useEffect(() => {
-    //get all refs that are hanging freelly except the currentRef
-    if (isShooting == false && score > 0) {
-      if (currentBallRef.current != null) {
-        return;
+  let handleHangingBalls = (ballRefsArr: any[]) => {
+    let res = [] as any[];
+    let topBalls = [];
+    for (let index = 0; index < ballRefsArr.length; index++) {
+      const element = ballRefsArr[index];
+      if (!element.current) continue;
+      let currentBallRect = element?.current?.getBoundingClientRect();
+      if (currentBallRect.top <= boardDimension.top) {
+        topBalls.push(element);
       }
-
-      //get all balls hugging the top
-      let res = [] as any[];
-      let topBalls = [];
-      let ballRefsCpy = { ...ballRefs };
-
-      let ballRefsArr = ballRefsArray(ballRefsCpy);
-      for (let index = 0; index < ballRefsArr.length; index++) {
-        const element = ballRefsArr[index];
-        let currentBallRect = element.current.getBoundingClientRect();
-        if (currentBallRect.top <= boardDimension.top) {
-          topBalls.push(element);
-        }
-      }
-
-      for (let index = 0; index < topBalls.length; index++) {
-        const topBallRef = topBalls[index];
-        res.push(topBallRef);
-        console.log(
-          getSurroundingMatchingBalls(topBallRef, ballRefsArr, res, false)
-        );
-      }
-
-      let hangingBalls = ballRefsArr
-        .filter((ref) => !res.includes(ref))
-        .sort(
-          (a, b) =>
-            a.current.getBoundingClientRect().top -
-            b.current.getBoundingClientRect().top
-        );
-
-      let t1 = gsap.timeline({
-        paused: true,
-        // repeat: -1,
-        // repeatRefresh: true,
-        // autoRemoveChildren
-        onComplete: () => {
-          console.log("DONE SHAKING OFF HANGING!!");
-        },
-      });
-      // let moveSinlgeHangingBall = (ref: any, delay: number) => {
-      //   console.log("DELAY", delay);
-      //   let moveHang = () => {
-      //     gsap.to(ref.current, { y: "+=" + yOffset * 6, delay });
-
-      //     if (
-      //       isCollide(ref)
-      //       // ||
-      //       // boardDimension.top >= ref.current.getBoundingClientRect().y
-      //     ) {
-      //       return;
-      //     }
-
-      //     requestAnimationFrame(moveHang);
-      //   };
-
-      //   requestAnimationFrame(moveHang);
-      // };
-
-      // for (let index = 0; index < hangingBalls.length; index++) {
-      //   const ref = hangingBalls[index];
-      //   moveSinlgeHangingBall(ref, 0.1 * index * hangingBalls.length);
-      // }
-
-      for (let index = 0; index < hangingBalls.length; index++) {
-        const ref = hangingBalls[index];
-        t1.to(
-          ref.current,
-          {
-            y: 50 * 3,
-            x: 50 * (index % 2 == 0 ? -3 : 3),
-            opacity: 0,
-
-            zIndex: 5,
-            // ease: "none",
-            // repeat: -1,
-            // repeatRefresh: true,
-          },
-          // "+=0.1"
-          0
-        );
-      }
-
-      t1.totalDuration(2).play();
-
-      return;
     }
-  }, [isShooting, boardDimension, currentBallRef, ballRefs, score]);
+
+    for (let index = 0; index < topBalls.length; index++) {
+      const topBallRef = topBalls[index];
+      res.push(topBallRef);
+      console.log(
+        getSurroundingMatchingBalls(topBallRef, ballRefsArr, res, false)
+      );
+    }
+
+    let hangingBalls = ballRefsArr
+      .filter((ref) => !res.includes(ref))
+      .sort(
+        (a, b) =>
+          a.current.getBoundingClientRect().top -
+          b.current.getBoundingClientRect().top
+      );
+
+    return hangingBalls;
+  };
 };

@@ -1,29 +1,20 @@
-import gsap from "gsap";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { random } from "../../utils/generate";
 import { Ball } from "../ball/ball";
 import styles from "./gameBoard.module.scss";
 import { v4 as uuidv4 } from "uuid";
 import { useGameContext } from "../../state/contextProviders/gameContext";
-import { usePlayerContext } from "../../state/contextProviders/playerContext";
 
 export const GameBoard = () => {
   let {
-    state: { newBallTrigger, ballsRefsInPath, ballRefs, score },
+    state: { newBallTrigger, ballsRefsInPath, ballRefs },
     setBoardDimensionDispatch,
     setBallRefsInPathDispatch,
     setNewBallTriggerDispatch,
-    setScoreDispatch,
   } = useGameContext();
 
-  let getBallColor = () => ["red", "blue", "red", "blue"][random(0, 4)];
+  let getBallColor = () => ["red", "blue", "purple", "green"][random(0, 4)];
   const [balls, setBalls] = useState<{}>(() => {
     let id = uuidv4();
     return {
@@ -53,6 +44,7 @@ export const GameBoard = () => {
   useEffect(() => {
     if (ballsRefsInPath.length > 0) {
       let ballsCpy = { ...balls } as any;
+      setBallRefsInPathDispatch([]);
       for (let index = 0; index < ballsRefsInPath.length; index++) {
         const ref = ballsRefsInPath[index];
 
@@ -60,23 +52,11 @@ export const GameBoard = () => {
 
         delete ballsCpy[id];
       }
-      let t1 = gsap.timeline({
-        repeat: 4,
-        onComplete: () => {
-          setBallRefsInPathDispatch([]);
-          setBalls(ballsCpy);
-          setNewBallTriggerDispatch();
-          setScoreDispatch(score + 3);
-        },
-      });
-      t1.pause();
-      for (let index = 0; index < ballsRefsInPath.length; index++) {
-        const ref = ballsRefsInPath[index];
-        t1.fromTo(ref.current, { opacity: 1 }, { opacity: 0.5 }, 0);
-      }
-      t1.duration(0.3).play();
+
+      setBalls({ ...ballsCpy });
+      setNewBallTriggerDispatch();
     }
-  }, [balls, ballRefs, ballsRefsInPath, score]);
+  }, [ballRefs, ballsRefsInPath]);
 
   let ballsArray = useMemo(() => {
     return Object.entries(balls).map(([_, value]) => value);
