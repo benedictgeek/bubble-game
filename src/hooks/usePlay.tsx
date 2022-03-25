@@ -2,6 +2,14 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { usePlayerContext } from "../state/contextProviders/playerContext";
 import { useGameContext } from "../state/contextProviders/gameContext";
+import {
+  getCenter,
+  getDistance,
+  ballRefsArray,
+  getSurroundingMatchingBalls,
+  removeRefsFromRefsObject,
+  handleHangingBalls,
+} from "../utils/gamePlay";
 
 export const usePlay = () => {
   let {
@@ -64,24 +72,6 @@ export const usePlay = () => {
     score,
   ]);
 
-  let getCenter = (currentBallRect: any) => {
-    return {
-      a: currentBallRect.x - currentBallRect.width / 2,
-      b: currentBallRect.y - currentBallRect.width / 2,
-    };
-  };
-
-  let getDistance = (currentBallCenter: any, center: any) => {
-    return Math.sqrt(
-      Math.pow(currentBallCenter.a - center.a, 2) +
-        Math.pow(currentBallCenter.b - center.b, 2)
-    );
-  };
-
-  let ballRefsArray = (ballRefs: {}) => {
-    return Object.entries(ballRefs).map(([_, value]) => value) as any[];
-  };
-
   let isCollide = (currentBallRef: any) => {
     let currentBallRect = currentBallRef.current.getBoundingClientRect();
 
@@ -107,72 +97,10 @@ export const usePlay = () => {
 
       let distance = getDistance(currentBallCenter, center);
 
-      if (distance <= currentBallRect.width) return true;
+      if (distance < currentBallRect.width) return true;
     }
 
     return false;
-  };
-
-  let getSurroundingMatchingBalls = (
-    ballCollidingRef: any,
-    ballRefsCpy: any[],
-    resultArr: any[],
-    checkColor = true
-  ) => {
-    let collectedRefIndex = ballRefsCpy.indexOf(ballCollidingRef);
-
-    ballRefsCpy.splice(collectedRefIndex, 1);
-
-    let surroundingBalls = [];
-    let currentBallColor = JSON.parse(ballCollidingRef.current.id).color;
-    let currentBallRect = ballCollidingRef.current.getBoundingClientRect();
-
-    let currentBallCenter = getCenter(currentBallRect);
-
-    for (let index = 0; index < ballRefsCpy.length; index++) {
-      const ballRef = ballRefsCpy[index];
-
-      let currentBallRect = ballRef.current.getBoundingClientRect();
-
-      let center = getCenter(currentBallRect);
-
-      //remove moving ball from check
-      if (center.a == currentBallCenter.a && center.b == currentBallCenter.b)
-        continue;
-
-      let distance = getDistance(currentBallCenter, center);
-      let checkingBallColor = JSON.parse(ballRef.current.id).color;
-
-      if (checkColor) {
-        if (
-          distance <= currentBallRect.width &&
-          currentBallColor == checkingBallColor
-        ) {
-          surroundingBalls.push(ballRef);
-          resultArr.push(ballRef);
-        }
-      } else if (distance <= currentBallRect.width) {
-        surroundingBalls.push(ballRef);
-        resultArr.push(ballRef);
-      }
-    }
-    for (let index = 0; index < surroundingBalls.length; index++) {
-      const ball = surroundingBalls[index];
-      getSurroundingMatchingBalls(ball, ballRefsCpy, resultArr, checkColor);
-    }
-
-    return surroundingBalls;
-  };
-
-  let removeRefsFromRefsObject = (refsObject: any, refsList: any) => {
-    for (let index = 0; index < refsList.length; index++) {
-      const ref = refsList[index];
-      let id = JSON.parse(ref.current.id).id;
-
-      delete refsObject[id];
-    }
-
-    return refsObject;
   };
 
   let handleSameBallsCheck = (ballCollidingRef: any) => {
@@ -196,7 +124,7 @@ export const usePlay = () => {
             gsap.to(ref.current, { opacity: 0 });
           }
 
-          let hangingBalls = handleHangingBalls(ballRefsCpy);
+          let hangingBalls = handleHangingBalls(ballRefsCpy, boardDimension);
 
           if (hangingBalls.length > 0) {
             // t1.to
@@ -220,11 +148,13 @@ export const usePlay = () => {
 
             for (let index = 0; index < hangingBalls.length; index++) {
               const ref = hangingBalls[index];
+              let currentBallRect = ref.current.getBoundingClientRect();
+              let playerBallWidth = currentBallRect.width;
               t2.to(
                 ref.current,
                 {
-                  y: 50 * 3,
-                  x: 50 * (index % 2 == 0 ? -3 : 3),
+                  y: playerBallWidth * 3,
+                  x: playerBallWidth * (index % 2 == 0 ? -3 : 3),
                   opacity: 0,
                   zIndex: 5,
                 },
@@ -253,34 +183,22 @@ export const usePlay = () => {
     return res;
   };
 
-  let handleHangingBalls = (ballRefsArr: any[]) => {
-    let res = [] as any[];
-    let topBalls = [];
-    for (let index = 0; index < ballRefsArr.length; index++) {
-      const element = ballRefsArr[index];
-      if (!element.current) continue;
-      let currentBallRect = element?.current?.getBoundingClientRect();
-      if (currentBallRect.top <= boardDimension.top) {
-        topBalls.push(element);
+  useEffect(() => {
+    console.log(currentBallRef, Object.keys(ballRefs).length);
+    if (currentBallRef == null) return;
+    let _ballRefs = ballRefsArray(ballRefs);
+    let playerBallRect = currentBallRef.current.getBoundingClientRect();
+    let playerBallCenter = getCenter(playerBallRect);
+    for (let index = 0; index < _ballRefs.length; index++) {
+      const ref = _ballRefs[index];
+      if (!ref?.current) continue;
+      if (ref == currentBallRef) continue;
+      let currentBallRect = ref.current.getBoundingClientRect();
+      let center = getCenter(currentBallRect);
+      let distance = getDistance(playerBallCenter, center);
+      if (distance <= playerBallRect.width) {
+        console.log("GAME OVER!!!");
       }
     }
-
-    for (let index = 0; index < topBalls.length; index++) {
-      const topBallRef = topBalls[index];
-      res.push(topBallRef);
-      console.log(
-        getSurroundingMatchingBalls(topBallRef, ballRefsArr, res, false)
-      );
-    }
-
-    let hangingBalls = ballRefsArr
-      .filter((ref) => !res.includes(ref))
-      .sort(
-        (a, b) =>
-          a.current.getBoundingClientRect().top -
-          b.current.getBoundingClientRect().top
-      );
-
-    return hangingBalls;
-  };
+  }, [currentBallRef]);
 };

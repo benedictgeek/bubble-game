@@ -1,6 +1,8 @@
 .ball {
   position: absolute;
   bottom: 0;
+  width: calc(100% / 9);
+  aspect-ratio: 1/1;
   left: 50%;
   transform: translateX(-50%);
   border-radius: 50%;

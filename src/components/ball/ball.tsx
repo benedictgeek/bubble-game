@@ -24,9 +24,7 @@ export const Ball = ({ color, id }: { color: string; id: string }) => {
     setCurrentBallRefDispatch(ballRef);
     addBallRefDispatch({ [id]: ballRef });
 
-    // return () => {
-    //   ballRef.current = null;
-    // };
+   
   }, []);
 
   return (
@@ -36,9 +34,7 @@ export const Ball = ({ color, id }: { color: string; id: string }) => {
       ref={ballRef}
       className={styles.ball}
       style={{
-        width: 50,
-        height: 50,
-        backgroundColor: color,
+        border: `2px solid ${color}`,
       }}
     ></div>
   );
