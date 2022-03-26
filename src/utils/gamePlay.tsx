@@ -1,7 +1,7 @@
 export let getCenter = (currentBallRect: any) => {
   return {
     a: currentBallRect.x - currentBallRect.width / 2,
-    b: currentBallRect.y - currentBallRect.width / 2,
+    b: currentBallRect.y - currentBallRect.height / 2,
   };
 };
 

@@ -1,9 +1,37 @@
 .container {
-  margin-top: 15px;
+  margin: 25px 0 5px 0;
 }
 
 .pad {
+  height: 100px;
+  width: 100px;
   border-radius: 50%;
-  background-color: grey;
+  border: 2px solid white;
+  // background-color: grey;
   cursor: grabbing;
+  position: relative;
+  z-index: 6;
+}
+
+.padInner {
+  position: absolute;
+  width: 25%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 2px solid white;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+}
+
+.indicator {
+  left: 50%;
+  transform: translateX(-50%);
+  top: -5px;
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  width: 10%;
+  aspect-ratio: 1/1;
+  z-index: -1;
 }

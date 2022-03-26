@@ -1,0 +1,30 @@
+.container {
+  height: 80px;
+  margin: 15px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.scoreSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.scoreSection_border {
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+}
+
+.section_value {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.section_title {
+    color: rgba(255, 255, 255, 0.493);
+}

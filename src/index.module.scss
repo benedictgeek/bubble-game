@@ -1,4 +1,10 @@
+@font-face {
+  font-family: moonhouse;
+  src: url(./asset/fonts/moonhouse-regular.ttf);
+}
+
 html {
+  font-family: moonhouse;
   height: 100%;
 }
 
@@ -10,7 +16,6 @@ body {
   // flex-direction: column;
   // align-items: center;
 }
-
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
@@ -24,5 +29,5 @@ code {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #22396E;
+  background-color: #22396e;
 }
