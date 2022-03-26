@@ -20,7 +20,8 @@ export let getSurroundingMatchingBalls = (
   ballCollidingRef: any,
   ballRefsCpy: any[],
   resultArr: any[],
-  checkColor = true
+  checkColor = true,
+  ballBorderWidth: number
 ) => {
   let collectedRefIndex = ballRefsCpy.indexOf(ballCollidingRef);
 
@@ -48,20 +49,26 @@ export let getSurroundingMatchingBalls = (
 
     if (checkColor) {
       if (
-        distance <= currentBallRect.width &&
+        distance <= currentBallRect.width + ballBorderWidth &&
         currentBallColor == checkingBallColor
       ) {
         surroundingBalls.push(ballRef);
         resultArr.push(ballRef);
       }
-    } else if (distance <= currentBallRect.width) {
+    } else if (distance <= currentBallRect.width + ballBorderWidth) {
       surroundingBalls.push(ballRef);
       resultArr.push(ballRef);
     }
   }
   for (let index = 0; index < surroundingBalls.length; index++) {
     const ball = surroundingBalls[index];
-    getSurroundingMatchingBalls(ball, ballRefsCpy, resultArr, checkColor);
+    getSurroundingMatchingBalls(
+      ball,
+      ballRefsCpy,
+      resultArr,
+      checkColor,
+      ballBorderWidth
+    );
   }
 
   return surroundingBalls;
@@ -78,7 +85,11 @@ export let removeRefsFromRefsObject = (refsObject: any, refsList: any) => {
   return refsObject;
 };
 
-export let handleHangingBalls = (ballRefsArr: any[], boardDimension: any) => {
+export let handleHangingBalls = (
+  ballRefsArr: any[],
+  boardDimension: any,
+  ballBorderWidth: number
+) => {
   let res = [] as any[];
   let topBalls = [];
   for (let index = 0; index < ballRefsArr.length; index++) {
@@ -94,7 +105,13 @@ export let handleHangingBalls = (ballRefsArr: any[], boardDimension: any) => {
     const topBallRef = topBalls[index];
     res.push(topBallRef);
     console.log(
-      getSurroundingMatchingBalls(topBallRef, ballRefsArr, res, false)
+      getSurroundingMatchingBalls(
+        topBallRef,
+        ballRefsArr,
+        res,
+        false,
+        ballBorderWidth
+      )
     );
   }
 

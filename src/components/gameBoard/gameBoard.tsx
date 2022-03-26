@@ -14,7 +14,7 @@ export const GameBoard = () => {
     setNewBallTriggerDispatch,
   } = useGameContext();
 
-  let getBallColor = () => ["red", "blue", "purple", "green"][random(0, 4)];
+  let getBallColor = () => ["#F88378", "#95B4D6", "#E094F7", "#C6F8C4"][random(0, 4)];
   const [balls, setBalls] = useState<{}>(() => {
     let id = uuidv4();
     return {

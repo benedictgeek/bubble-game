@@ -27,7 +27,7 @@ export const reducer = (state: StateTypes, action: ActionTypes) => {
       return {
         ...state,
         trajectoryAngle: 90,
-        isShooting: false,
+        // isShooting: false,
       };
 
     default:

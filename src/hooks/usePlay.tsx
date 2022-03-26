@@ -15,10 +15,11 @@ export const usePlay = () => {
   let {
     state: { trajectoryAngle, isShooting },
     shootDispatch,
+    resetTrajectoryAngleDispatch,
   } = usePlayerContext();
 
   let {
-    state: { currentBallRef, boardDimension, ballRefs, score },
+    state: { currentBallRef, boardDimension, ballRefs, score, ballBorderWidth },
     setNewBallTriggerDispatch,
     updateBallRefsDispatch,
     setBallRefsInPathDispatch,
@@ -47,13 +48,14 @@ export const usePlay = () => {
         }
 
         if (
-          isCollide(currentBallRef) ||
-          boardDimension.top >= currentBallRect.y
+          boardDimension.top >= currentBallRect.y ||
+          isCollide(currentBallRef)
         ) {
           let res = handleSameBallsCheck(currentBallRef);
           if (res.length < 3) {
             shootDispatch();
             setNewBallTriggerDispatch();
+            resetTrajectoryAngleDispatch();
           }
           return;
         }
@@ -97,7 +99,7 @@ export const usePlay = () => {
 
       let distance = getDistance(currentBallCenter, center);
 
-      if (distance < currentBallRect.width) return true;
+      if (distance < currentBallRect.width + ballBorderWidth) return true;
     }
 
     return false;
@@ -108,7 +110,13 @@ export const usePlay = () => {
 
     let ballRefsCpy = ballRefsArray({ ...ballRefs });
 
-    getSurroundingMatchingBalls(ballCollidingRef, ballRefsCpy, res, true);
+    getSurroundingMatchingBalls(
+      ballCollidingRef,
+      ballRefsCpy,
+      res,
+      true,
+      ballBorderWidth
+    );
     if (res.length >= 3) {
       let refsCpy = { ...ballRefs };
 
@@ -124,7 +132,7 @@ export const usePlay = () => {
             gsap.to(ref.current, { opacity: 0 });
           }
 
-          let hangingBalls = handleHangingBalls(ballRefsCpy, boardDimension);
+          let hangingBalls = handleHangingBalls(ballRefsCpy, boardDimension, ballBorderWidth);
 
           if (hangingBalls.length > 0) {
             // t1.to
@@ -142,6 +150,7 @@ export const usePlay = () => {
                 updateBallRefsDispatch(refsCpy);
                 setBallRefsInPathDispatch([...res, ...hangingBalls]);
                 setScoreDispatch(score + 3);
+                resetTrajectoryAngleDispatch();
                 console.log("DONE SHAKING OFF HANGING!!");
               },
             });
@@ -169,6 +178,7 @@ export const usePlay = () => {
             updateBallRefsDispatch(refsCpy);
             setBallRefsInPathDispatch(res);
             setScoreDispatch(score + 3);
+            resetTrajectoryAngleDispatch();
           }
         },
       });

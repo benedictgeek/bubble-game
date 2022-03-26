@@ -16,7 +16,6 @@ export const GamePad = () => {
 
   useEffect(() => {
     let padIdentifier: any = padRef.current;
-    let indicatorRefIdentifier: any = indicatorRef.current;
 
     padIdentifier?.addEventListener("mousemove", mouseMoveEventHandler);
     // indicatorRefIdentifier?.addEventListener("mousemove", () => null);
@@ -59,12 +58,10 @@ export const GamePad = () => {
   }, [isShooting]);
 
   useEffect(() => {
-    console.log("ANGLE NEW", trajectoryAngle);
     let padRect = padRef.current?.getBoundingClientRect();
     let padX = padRect.x;
     let padY = padRect.y;
     let indecatorRect = indicatorRef.current?.getBoundingClientRect();
-    // console.log(padRect, indicatorRef.current?.getBoundingClientRect());
     padRect.width = padRect.width - indecatorRect.width / 2;
     let padCenter = getCenter(padRect);
     let radius = padRect.height / 2;
@@ -72,7 +69,6 @@ export const GamePad = () => {
       radius * Math.cos((trajectoryAngle * Math.PI) / 180) + padCenter.a;
     let computedY =
       radius * Math.sin((trajectoryAngle * Math.PI) / 180) + padCenter.b;
-    console.log(computedX, computedY);
     gsap.set(indicatorRef.current, {
       left: padX - computedX,
       top: padY - indecatorRect.height / 2 - computedY,

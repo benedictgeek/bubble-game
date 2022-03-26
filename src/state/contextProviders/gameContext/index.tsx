@@ -7,7 +7,7 @@ import {
   addBallRef,
   updateBallRefs,
   setBallRefsInPath,
-  setScore
+  setScore,
 } from "./actions";
 import { reducer } from "./reducer";
 
@@ -19,7 +19,8 @@ export interface StateTypes {
   newBallTrigger: number;
   ballRefs: ObjectLiteral;
   ballsRefsInPath: ObjectLiteral[];
-  score: number
+  score: number;
+  ballBorderWidth: number;
 }
 
 let initialState: StateTypes = {
@@ -28,7 +29,8 @@ let initialState: StateTypes = {
   newBallTrigger: 0,
   ballRefs: {},
   ballsRefsInPath: [],
-  score: 0
+  score: 0,
+  ballBorderWidth: 2,
 };
 
 interface ContextState {
@@ -50,7 +52,6 @@ const GameContext = React.createContext<ContextState>({
   updateBallRefsDispatch: () => {},
   setBallRefsInPathDispatch: () => {},
   setScoreDispatch: () => {},
-  
 });
 
 export let GameContextProvider = ({ children }: ComponentProps<FC<{}>>) => {
@@ -83,8 +84,6 @@ export let GameContextProvider = ({ children }: ComponentProps<FC<{}>>) => {
     setScore(payload, dispatch);
   };
 
-  
-
   return (
     <GameContext.Provider
       value={{
@@ -95,7 +94,7 @@ export let GameContextProvider = ({ children }: ComponentProps<FC<{}>>) => {
         addBallRefDispatch,
         updateBallRefsDispatch,
         setBallRefsInPathDispatch,
-        setScoreDispatch
+        setScoreDispatch,
       }}
     >
       {children}
