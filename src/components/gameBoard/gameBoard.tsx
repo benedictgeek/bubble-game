@@ -10,11 +10,13 @@ export const GameBoard = () => {
   let {
     state: { newBallTrigger, ballsRefsInPath, ballRefs },
     setBoardDimensionDispatch,
+    setBoardRefDispatch,
     setBallRefsInPathDispatch,
     setNewBallTriggerDispatch,
   } = useGameContext();
 
-  let getBallColor = () => ["#F88378", "#95B4D6", "#E094F7", "#C6F8C4"][random(0, 4)];
+  let getBallColor = () =>
+    ["#F88378", "#95B4D6", "#E094F7", "#C6F8C4"][random(0, 4)];
   const [balls, setBalls] = useState<{}>(() => {
     let id = uuidv4();
     return {
@@ -27,6 +29,7 @@ export const GameBoard = () => {
     setBoardDimensionDispatch(
       boardRef.current?.getBoundingClientRect().toJSON()
     );
+    setBoardRefDispatch(boardRef);
   }, []);
 
   useEffect(() => {
@@ -61,6 +64,8 @@ export const GameBoard = () => {
   let ballsArray = useMemo(() => {
     return Object.entries(balls).map(([_, value]) => value);
   }, [balls]);
+
+  // document.appendChild()
 
   return (
     <div ref={boardRef} className={styles.boardContainer}>

@@ -8,6 +8,7 @@ import {
   updateBallRefs,
   setBallRefsInPath,
   setScore,
+  setBoardRef
 } from "./actions";
 import { reducer } from "./reducer";
 
@@ -21,6 +22,7 @@ export interface StateTypes {
   ballsRefsInPath: ObjectLiteral[];
   score: number;
   ballBorderWidth: number;
+  boardRef: ObjectLiteral
 }
 
 let initialState: StateTypes = {
@@ -31,6 +33,7 @@ let initialState: StateTypes = {
   ballsRefsInPath: [],
   score: 0,
   ballBorderWidth: 2,
+  boardRef: {}
 };
 
 interface ContextState {
@@ -38,10 +41,12 @@ interface ContextState {
   setBoardDimensionDispatch: (payload: any) => void;
   setCurrentBallRefDispatch: (payload: any) => void;
   setNewBallTriggerDispatch: () => void;
+  setBoardRefDispatch: (payload: ObjectLiteral) => void;
   addBallRefDispatch: (payload: ObjectLiteral) => void;
   updateBallRefsDispatch: (payload: ObjectLiteral) => void;
   setBallRefsInPathDispatch: (payload: ObjectLiteral[]) => void;
   setScoreDispatch: (payload: number) => void;
+  
 }
 const GameContext = React.createContext<ContextState>({
   state: initialState,
@@ -49,6 +54,7 @@ const GameContext = React.createContext<ContextState>({
   setCurrentBallRefDispatch: () => {},
   setNewBallTriggerDispatch: () => {},
   addBallRefDispatch: () => {},
+  setBoardRefDispatch: () => {},
   updateBallRefsDispatch: () => {},
   setBallRefsInPathDispatch: () => {},
   setScoreDispatch: () => {},
@@ -84,10 +90,17 @@ export let GameContextProvider = ({ children }: ComponentProps<FC<{}>>) => {
     setScore(payload, dispatch);
   };
 
+  const setBoardRefDispatch = (payload: ObjectLiteral) => {
+    setBoardRef(payload, dispatch);
+  };
+
+  
+
   return (
     <GameContext.Provider
       value={{
         state,
+        setBoardRefDispatch,
         setBoardDimensionDispatch,
         setCurrentBallRefDispatch,
         setNewBallTriggerDispatch,

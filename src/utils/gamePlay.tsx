@@ -1,3 +1,6 @@
+import gsap from "gsap";
+import { scoreFleetElement } from "./generate";
+
 export let getCenter = (currentBallRect: any) => {
   return {
     a: currentBallRect.x - currentBallRect.width / 2,
@@ -124,4 +127,31 @@ export let handleHangingBalls = (
     );
 
   return hangingBalls;
+};
+
+export const handleFleetScore = ({
+  firstBallRef,
+  score = 0,
+  boardRef,
+}: {
+  firstBallRef: any;
+  score: number;
+  boardRef: any;
+}) => {
+  let boardDimension = boardRef.current.getBoundingClientRect();
+  let firstBallDimensions = firstBallRef.current.getBoundingClientRect();
+  let fleetElement = scoreFleetElement({
+    score: score,
+    top: firstBallDimensions.top - boardDimension.top,
+    left: firstBallDimensions.left - boardDimension.left,
+  });
+  boardRef.current.appendChild(fleetElement);
+
+  gsap.to(fleetElement, {
+    opacity: 0,
+    duration: 2,
+    onComplete: () => {
+      boardRef.current.removeChild(fleetElement);
+    },
+  });
 };

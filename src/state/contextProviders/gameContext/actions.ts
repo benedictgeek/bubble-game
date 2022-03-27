@@ -9,6 +9,7 @@ import {
   UPDATE_BALL_REFS,
   SET_BALL_REFS_IN_PATH,
   SET_SCORE,
+  SET_BOARD_REF
 } from "./types";
 
 export let setBoardDimension = (
@@ -58,4 +59,11 @@ export let setScore = (
   dispatch: React.Dispatch<ActionTypes>
 ) => {
   dispatch({ type: SET_SCORE, payload: payload });
+};
+
+export let setBoardRef = (
+  payload: ObjectLiteral,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
+  dispatch({ type: SET_BOARD_REF, payload: payload });
 };

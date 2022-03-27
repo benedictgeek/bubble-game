@@ -9,7 +9,9 @@ import {
   getSurroundingMatchingBalls,
   removeRefsFromRefsObject,
   handleHangingBalls,
+  handleFleetScore,
 } from "../utils/gamePlay";
+import { scoreFleetElement } from "../utils/generate";
 
 export const usePlay = () => {
   let {
@@ -19,7 +21,14 @@ export const usePlay = () => {
   } = usePlayerContext();
 
   let {
-    state: { currentBallRef, boardDimension, ballRefs, score, ballBorderWidth },
+    state: {
+      currentBallRef,
+      boardDimension,
+      boardRef,
+      ballRefs,
+      score,
+      ballBorderWidth,
+    },
     setNewBallTriggerDispatch,
     updateBallRefsDispatch,
     setBallRefsInPathDispatch,
@@ -127,14 +136,33 @@ export const usePlay = () => {
         onComplete: () => {
           //if completed animating matching balls
           //check for hanging balls
+          let firstBallRef;
           for (let index = 0; index < res.length; index++) {
             const ref = res[index];
+            if (index == 0) {
+              firstBallRef = ref;
+            }
             gsap.to(ref.current, { opacity: 0 });
           }
+          let matchingScore = res.length * 2;
+          handleFleetScore({
+            firstBallRef: firstBallRef,
+            score: matchingScore,
+            boardRef: boardRef,
+          });
 
-          let hangingBalls = handleHangingBalls(ballRefsCpy, boardDimension, ballBorderWidth);
+          let hangingBalls = handleHangingBalls(
+            ballRefsCpy,
+            boardDimension,
+            ballBorderWidth
+          );
 
           if (hangingBalls.length > 0) {
+            handleFleetScore({
+              firstBallRef: hangingBalls[0],
+              score: hangingBalls.length,
+              boardRef: boardRef,
+            });
             // t1.to
             let t2 = gsap.timeline({
               paused: true,
@@ -149,7 +177,7 @@ export const usePlay = () => {
                 shootDispatch();
                 updateBallRefsDispatch(refsCpy);
                 setBallRefsInPathDispatch([...res, ...hangingBalls]);
-                setScoreDispatch(score + 3);
+                setScoreDispatch(score + matchingScore + hangingBalls.length);
                 resetTrajectoryAngleDispatch();
                 console.log("DONE SHAKING OFF HANGING!!");
               },
@@ -177,7 +205,7 @@ export const usePlay = () => {
             shootDispatch();
             updateBallRefsDispatch(refsCpy);
             setBallRefsInPathDispatch(res);
-            setScoreDispatch(score + 3);
+            setScoreDispatch(score + matchingScore);
             resetTrajectoryAngleDispatch();
           }
         },

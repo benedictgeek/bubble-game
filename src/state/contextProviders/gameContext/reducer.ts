@@ -8,6 +8,7 @@ import {
   UPDATE_BALL_REFS,
   SET_BALL_REFS_IN_PATH,
   SET_SCORE,
+  SET_BOARD_REF,
 } from "./types";
 
 export interface ActionTypes {
@@ -52,6 +53,12 @@ export const reducer = (state: StateTypes, action: ActionTypes) => {
       return {
         ...state,
         score: action.payload,
+      };
+
+    case SET_BOARD_REF:
+      return {
+        ...state,
+        boardRef: action.payload,
       };
 
     default:

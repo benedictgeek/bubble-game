@@ -7,3 +7,14 @@
   transform: translateX(-50%);
   border-radius: 50%;
 }
+
+.fleetScore {
+  position: absolute;
+  width: calc(100% / 12);
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-color: pink;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
