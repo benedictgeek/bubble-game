@@ -3,6 +3,7 @@ import { usePlayerContext } from "../../state/contextProviders/playerContext";
 import styles from "./pad.module.scss";
 import gsap from "gsap";
 import { getCenter } from "../../utils/gamePlay";
+import { useGameContext } from "../../state/contextProviders/gameContext";
 
 export const GamePad = () => {
   const padRef = useRef<any>(null);
@@ -13,6 +14,11 @@ export const GamePad = () => {
     updateTrajectoryAngleDispatch,
     shootDispatch,
   } = usePlayerContext();
+
+  let {
+    state: { shots },
+    setDynamicDispatch,
+  } = useGameContext();
 
   useEffect(() => {
     let padIdentifier: any = padRef.current;
@@ -47,7 +53,10 @@ export const GamePad = () => {
     }
   };
 
-  let mouseDownEventHandler = () => shootDispatch();
+  let mouseDownEventHandler = () => {
+    setDynamicDispatch({ shots: shots + 1 });
+    shootDispatch();
+  };
 
   useEffect(() => {
     if (isShooting) {

@@ -1,10 +1,14 @@
+import { useGameContext } from "../../state/contextProviders/gameContext";
 import styles from "./scoreBoard.module.scss";
 export const ScoreBoard = ({}) => {
+  let {
+    state: { score, lives, shots },
+  } = useGameContext();
   return (
     <div className={styles.container}>
-      <ScoreSection value={80} title="BALLS" />
-      <ScoreSection border={true} value={3456} title="POINTS" />
-      <ScoreSection value={5} title="LIVES" />
+      <ScoreSection value={shots} title="SHOTS" />
+      <ScoreSection border={true} value={score} title="POINTS" />
+      <ScoreSection value={lives} title="LIVES" />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import {
   SET_BALL_REFS_IN_PATH,
   SET_SCORE,
   SET_BOARD_REF,
+  SET_DYNAMIC,
 } from "./types";
 
 export interface ActionTypes {
@@ -59,6 +60,12 @@ export const reducer = (state: StateTypes, action: ActionTypes) => {
       return {
         ...state,
         boardRef: action.payload,
+      };
+
+    case SET_DYNAMIC:
+      return {
+        ...state,
+        ...action.payload,
       };
 
     default:

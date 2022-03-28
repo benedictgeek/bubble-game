@@ -8,7 +8,8 @@ import {
   updateBallRefs,
   setBallRefsInPath,
   setScore,
-  setBoardRef
+  setBoardRef,
+  setDynamic,
 } from "./actions";
 import { reducer } from "./reducer";
 
@@ -21,8 +22,10 @@ export interface StateTypes {
   ballRefs: ObjectLiteral;
   ballsRefsInPath: ObjectLiteral[];
   score: number;
+  shots: number;
+  lives: number;
   ballBorderWidth: number;
-  boardRef: ObjectLiteral
+  boardRef: ObjectLiteral;
 }
 
 let initialState: StateTypes = {
@@ -32,8 +35,10 @@ let initialState: StateTypes = {
   ballRefs: {},
   ballsRefsInPath: [],
   score: 0,
+  shots: 0,
+  lives: 5,
   ballBorderWidth: 2,
-  boardRef: {}
+  boardRef: {},
 };
 
 interface ContextState {
@@ -46,7 +51,7 @@ interface ContextState {
   updateBallRefsDispatch: (payload: ObjectLiteral) => void;
   setBallRefsInPathDispatch: (payload: ObjectLiteral[]) => void;
   setScoreDispatch: (payload: number) => void;
-  
+  setDynamicDispatch: (payload: ObjectLiteral) => void;
 }
 const GameContext = React.createContext<ContextState>({
   state: initialState,
@@ -58,6 +63,7 @@ const GameContext = React.createContext<ContextState>({
   updateBallRefsDispatch: () => {},
   setBallRefsInPathDispatch: () => {},
   setScoreDispatch: () => {},
+  setDynamicDispatch: () => {},
 });
 
 export let GameContextProvider = ({ children }: ComponentProps<FC<{}>>) => {
@@ -94,12 +100,15 @@ export let GameContextProvider = ({ children }: ComponentProps<FC<{}>>) => {
     setBoardRef(payload, dispatch);
   };
 
-  
+  const setDynamicDispatch = (payload: ObjectLiteral) => {
+    setDynamic(payload, dispatch);
+  };
 
   return (
     <GameContext.Provider
       value={{
         state,
+        setDynamicDispatch,
         setBoardRefDispatch,
         setBoardDimensionDispatch,
         setCurrentBallRefDispatch,

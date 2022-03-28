@@ -9,7 +9,8 @@ import {
   UPDATE_BALL_REFS,
   SET_BALL_REFS_IN_PATH,
   SET_SCORE,
-  SET_BOARD_REF
+  SET_BOARD_REF,
+  SET_DYNAMIC
 } from "./types";
 
 export let setBoardDimension = (
@@ -67,3 +68,12 @@ export let setBoardRef = (
 ) => {
   dispatch({ type: SET_BOARD_REF, payload: payload });
 };
+
+export let setDynamic = (
+  payload: ObjectLiteral,
+  dispatch: React.Dispatch<ActionTypes>
+) => {
+  dispatch({ type: SET_DYNAMIC, payload: payload });
+};
+
+
