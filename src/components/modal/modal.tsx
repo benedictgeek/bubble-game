@@ -52,11 +52,8 @@ export const GameModal = ({}) => {
       isOpen={show ?? false}
       style={{
         content: {
-          //   fontFamily: "cursive",
           width: "100%",
-          //   maxWidth: "450px",
           position: "unset",
-          //  border: "none"
           borderRadius: "20px",
           display: "flex",
           justifyContent: "center",

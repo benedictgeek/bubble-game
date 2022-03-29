@@ -16,12 +16,15 @@ export const GamePad = () => {
   } = usePlayerContext();
 
   let {
-    state: { shots },
+    state: {
+      shots,
+      modalData: { show },
+    },
     setDynamicDispatch,
   } = useGameContext();
 
   useEffect(() => {
-    console.log("IS SHOOTZING", isShooting);
+    if (show) return;
     let padIdentifier: any = padRef.current;
 
     padIdentifier?.addEventListener("mousemove", mouseMoveEventHandler);
@@ -34,7 +37,7 @@ export const GamePad = () => {
       padIdentifier?.removeEventListener("mousemove", mouseMoveEventHandler);
       padIdentifier?.removeEventListener("mousedown", mouseDownEventHandler);
     };
-  }, [isShooting, shots]);
+  }, [isShooting, shots, show]);
 
   let mouseMoveEventHandler = (event: MouseEvent) => {
     let padIdentifier: any = padRef.current;
