@@ -33,6 +33,7 @@ export const usePlay = () => {
     updateBallRefsDispatch,
     setBallRefsInPathDispatch,
     setScoreDispatch,
+    setDynamicDispatch,
   } = useGameContext();
 
   useEffect(() => {
@@ -179,7 +180,6 @@ export const usePlay = () => {
                 setBallRefsInPathDispatch([...res, ...hangingBalls]);
                 setScoreDispatch(score + matchingScore + hangingBalls.length);
                 resetTrajectoryAngleDispatch();
-                console.log("DONE SHAKING OFF HANGING!!");
               },
             });
 
@@ -222,7 +222,6 @@ export const usePlay = () => {
   };
 
   useEffect(() => {
-    console.log(currentBallRef, Object.keys(ballRefs).length);
     if (currentBallRef == null) return;
     let _ballRefs = ballRefsArray(ballRefs);
     let playerBallRect = currentBallRef.current.getBoundingClientRect();
@@ -235,7 +234,15 @@ export const usePlay = () => {
       let center = getCenter(currentBallRect);
       let distance = getDistance(playerBallCenter, center);
       if (distance <= playerBallRect.width) {
-        console.log("GAME OVER!!!");
+        setDynamicDispatch({
+          timerMode: "PAUSED",
+          modalData: {
+            show: true,
+            title: "GAME OVER",
+            subTitle: "You have hit the end of the road, try again!",
+            option: "",
+          },
+        });
       }
     }
   }, [currentBallRef]);

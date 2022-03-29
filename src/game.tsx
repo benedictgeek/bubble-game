@@ -17,6 +17,7 @@ const Game = () => {
       <GameBoard />
       <GamePad />
       <GameTime />
+      
     </div>
   );
 };

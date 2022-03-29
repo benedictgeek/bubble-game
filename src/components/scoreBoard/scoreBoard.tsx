@@ -1,5 +1,7 @@
 import { useGameContext } from "../../state/contextProviders/gameContext";
 import styles from "./scoreBoard.module.scss";
+import { useStopwatch } from "react-timer-hook";
+import { useCallback, useEffect } from "react";
 export const ScoreBoard = ({}) => {
   let {
     state: { score, lives, shots },
@@ -35,9 +37,38 @@ export const ScoreSection = ({
 };
 
 export const GameTime = () => {
+  const {
+    state: { timerMode },
+  } = useGameContext();
+  const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
+    useStopwatch({ autoStart: false });
+
+  useEffect(() => {
+    switch (timerMode) {
+      case "PAUSED":
+        pause();
+        break;
+      case "RESTART":
+        reset();
+        break;
+      case "PLAY":
+        start();
+        break;
+      default:
+        break;
+    }
+  }, [timerMode]);
+
+  const padTime = useCallback((value) => {
+    return value.toString().padStart(2, "0");
+  }, []);
+
   return (
     <div style={{ margin: "15px 0" }}>
-      <ScoreSection value={"2:06"} title={"TIME"} />
+      <ScoreSection
+        value={`${padTime(hours)} : ${padTime(minutes)} : ${padTime(seconds)}`}
+        title={"TIME"}
+      />
     </div>
   );
 };

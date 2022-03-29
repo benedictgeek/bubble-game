@@ -26,6 +26,13 @@ export interface StateTypes {
   lives: number;
   ballBorderWidth: number;
   boardRef: ObjectLiteral;
+  modalData: {
+    show?: boolean;
+    title?: string;
+    subTitle?: string;
+    option?: string;
+  };
+  timerMode: string;
 }
 
 let initialState: StateTypes = {
@@ -39,6 +46,13 @@ let initialState: StateTypes = {
   lives: 5,
   ballBorderWidth: 2,
   boardRef: {},
+  modalData: {
+    show: true,
+    title: "WELCOME",
+    subTitle: "Press play to start knocking bubbles off!",
+    option: "PLAY",
+  },
+  timerMode: "PAUSED",
 };
 
 interface ContextState {

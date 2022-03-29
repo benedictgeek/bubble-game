@@ -107,14 +107,12 @@ export let handleHangingBalls = (
   for (let index = 0; index < topBalls.length; index++) {
     const topBallRef = topBalls[index];
     res.push(topBallRef);
-    console.log(
-      getSurroundingMatchingBalls(
-        topBallRef,
-        ballRefsArr,
-        res,
-        false,
-        ballBorderWidth
-      )
+    getSurroundingMatchingBalls(
+      topBallRef,
+      ballRefsArr,
+      res,
+      false,
+      ballBorderWidth
     );
   }
 

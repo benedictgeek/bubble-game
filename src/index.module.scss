@@ -3,8 +3,13 @@
   src: url(./asset/fonts/moonhouse-regular.ttf);
 }
 
+@font-face {
+  font-family: zorque;
+  src: url(./asset/fonts/zorque.otf);
+}
+
 html {
-  font-family: moonhouse;
+  font-family: zorque;
   height: 100%;
 }
 

@@ -21,6 +21,7 @@ export const GamePad = () => {
   } = useGameContext();
 
   useEffect(() => {
+    console.log("IS SHOOTZING", isShooting);
     let padIdentifier: any = padRef.current;
 
     padIdentifier?.addEventListener("mousemove", mouseMoveEventHandler);
@@ -33,7 +34,7 @@ export const GamePad = () => {
       padIdentifier?.removeEventListener("mousemove", mouseMoveEventHandler);
       padIdentifier?.removeEventListener("mousedown", mouseDownEventHandler);
     };
-  }, [isShooting]);
+  }, [isShooting, shots]);
 
   let mouseMoveEventHandler = (event: MouseEvent) => {
     let padIdentifier: any = padRef.current;
@@ -59,12 +60,13 @@ export const GamePad = () => {
   };
 
   useEffect(() => {
+    // console.log()
     if (isShooting) {
       let padIdentifier: any = padRef.current;
       padIdentifier?.removeEventListener("mousemove", mouseMoveEventHandler);
       padIdentifier?.removeEventListener("mousedown", mouseDownEventHandler);
     }
-  }, [isShooting]);
+  }, [isShooting, shots]);
 
   useEffect(() => {
     let padRect = padRef.current?.getBoundingClientRect();
