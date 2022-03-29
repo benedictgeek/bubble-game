@@ -8,6 +8,6 @@ export let scoreFleetElement = ({ score = 0, top = 0, left = 0 }) => {
   element.style.top = `${top}px`;
   element.style.left = `${left}px`;
   element.className = ballStyles.fleetScore;
-  element.innerText = `+${score}`;
+  element.innerText = `+ ${score}`;
   return element;
 };

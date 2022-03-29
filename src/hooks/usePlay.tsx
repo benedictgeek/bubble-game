@@ -51,8 +51,9 @@ export const usePlay = () => {
 
         let currentBallRect = currentBallRef.current.getBoundingClientRect();
         if (
-          boardDimension.left >= currentBallRect.x ||
-          boardDimension.right - currentBallRect.width <= currentBallRect.x
+          boardDimension.left + ballBorderWidth >= currentBallRect.x ||
+          boardDimension.right - currentBallRect.width - ballBorderWidth <=
+            currentBallRect.x
         ) {
           xOffset = -xOffset;
         }

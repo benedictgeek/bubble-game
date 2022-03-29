@@ -62,7 +62,8 @@ export const GameModal = ({}) => {
         },
         overlay: {
           //   maxWidth: "50%",
-          maxWidth: "400px",
+          width: "max(400px, 50%)",
+          //   maxWidth: "400px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
