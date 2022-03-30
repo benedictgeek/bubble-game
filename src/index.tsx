@@ -4,6 +4,7 @@ import "./index.module.scss";
 import Game from "./game";
 import { AppContextProvider } from "./state/contextProviders";
 import { GameModal } from "./components/modal/modal";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,3 +15,6 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
+
+serviceWorkerRegistration.register();
+// serviceWorkerRegistration.unregister();
